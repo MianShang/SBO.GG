@@ -1,0 +1,76 @@
+.fullscreen {
+    height: 100%;
+    width: 100%;
+}
+
+.getLine{
+    border: 1px solid white;
+}
+
+.contentStyle{
+    background-color: rgb(43,45, 49);
+    border-radius: 12px;
+    text-align: center;
+}
+
+/* ================================좌측 사이드 카테고리============================= */
+
+/* 좌측 사이드바 사이즈 */
+.leftSize{
+    width: 300px;
+    height: 97.5vh;
+}
+
+
+/* ================================우측 div============================= */
+
+/* 우측 사이드바 사이즈 */
+.rightSize{
+    margin-left: 10px;
+    height: 97.5vh;
+    width: calc(100% - 330px);
+}
+
+/* 검색바 사이즈 */
+.searchBarSize{
+    border-radius: 25px;
+    height: 50px;
+}
+
+/* 채팅방 리스트 사이즈 */
+.chatListSize{
+    margin-top: 10px;
+    height: calc(100% - 145px); 
+    
+}
+
+/* 하단 div 사이즈 */
+.bottomSize{
+    margin-top: 10px;
+    height: 75px;
+}
+
+/* 광고영역 사이즈 */
+.searchAdSize{
+    height: 100%;
+    width: calc(100% - 85px);
+}
+
+/* 알림 및 토글(로비버튼) 사이즈 */
+.noticeSize{
+    height: 75px;
+    width: 75px;
+
+    margin-left: 10px;
+}
+
+/* 알림 및 토글(로비버튼) 호버시 그래픽 */
+.noticeSize:hover {
+    transition: box-shadow 0.3s ease;
+    box-shadow: inset 0 0 0 1px white;
+}
+
+/* 알림 및 토글(로비버튼) 이미지 포지션 */
+.imgPos{
+    margin-top: 5px;
+}

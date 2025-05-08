@@ -1,0 +1,15 @@
+.fullscreen {
+    height: 100%;
+    width: 100%;
+}
+
+.getLine{
+    border: 1px red solid;
+}
+
+.widthSize{
+    width: 100%;
+}
+.heightSize{
+    height: 100%;
+}

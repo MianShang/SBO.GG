@@ -1,32 +1,25 @@
 import { useState, useEffect } from 'react'
+import { Routes, Route, Link } from 'react-router-dom'
 import axios from 'axios';
 import './App.css'
 
+{/* 컴포넌트 import */}
+import LobbyPage from   './route/lobbyPage/lobbyPage.jsx';
+import SearchPage from  './route/searchPage/searchPage.jsx';
+import LoginPage from   './route/loginPage/loginPage.jsx';
+
 function App() {
-  const [test, setTest] = useState('');
-
-  function testButton(){
-
-    if(test == ''){
-      // 백엔드로는 /api로 시작하는 url로 요청한다
-      axios.get('/api/test')
-      .then(response => {
-        setTest(response.data);
-      })
-      .catch(error => {
-        console.error('에러 발생:', error);
-      });
-    } else {
-      setTest('');
-    }
-    
-
-  }
 
   return (
     <>
-      <button onClick={()=>{ testButton(); }}>테스트버튼</button>
-      <h1>{test}</h1>
+    {/* 초기 url 진입점인 "/" 비로그인시 "/login"로 자동연계 되게 할 예정*/}
+      <div className='widthSize heightSize'>
+        <Routes> 
+          <Route path="/"       element={ <LobbyPage/> }> </Route>
+          <Route path="/search" element={ <SearchPage/> }></Route>
+          <Route path="/login"  element={ <LoginPage/> }> </Route>   
+        </Routes>
+      </div>
     </>
   )
 }

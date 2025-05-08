@@ -1,0 +1,14 @@
+
+.color{
+    background-color: aliceblue;
+}
+
+.listRouteSize{
+    height: 100%;
+}
+
+.contentListStyle{
+    background-color: rgb(38, 38, 38);
+    border-radius: 12px;
+    text-align: center;
+}
