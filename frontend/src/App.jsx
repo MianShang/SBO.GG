@@ -13,7 +13,7 @@ function App() {
   return (
     <>
     {/* 초기 url 진입점인 "/" 비로그인시 "/login"로 자동연계 되게 할 예정*/}
-      <div className='widthSize heightSize'>
+      <div className='fullscreen'>
         <Routes> 
           <Route path="/"       element={ <LobbyPage/> }> </Route>
           <Route path="/search" element={ <SearchPage/> }></Route>

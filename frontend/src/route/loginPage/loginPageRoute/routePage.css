@@ -1,0 +1,55 @@
+/* 화면 사이즈 지정 */
+.fullscreen {
+    height: 100%;
+    width: 100%;
+}
+
+.getLine1{
+    border: 1px green solid;
+}
+
+.LogRoutePageStyle{
+    color: white;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgb(38, 38, 38);
+
+    border-radius: 12px;
+    text-align: center;
+}
+
+
+/*========================로그인 폼 스타일====================*/
+/* 회원가입도 동일한 폼 사용 */
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 80%;
+}
+
+
+.login-form input {
+  padding: 12px;
+  font-size: 16px;
+  border: none;
+  border-radius: 8px;
+  outline: none;
+}
+
+.login-form button {
+  padding: 12px;
+  background-color: white;
+  color: black;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.login-form button:hover {
+  background-color: #ddd;
+}
