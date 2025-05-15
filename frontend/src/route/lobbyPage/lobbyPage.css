@@ -49,6 +49,7 @@
     height: calc(100% - 375px);
     border-radius: 7px;
     border: 1px solid gray;
+    color: white;
 }
 
 /* 사이드바 확장시 표시되는 div 버튼 스타일  */

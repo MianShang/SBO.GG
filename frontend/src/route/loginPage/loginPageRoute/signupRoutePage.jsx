@@ -42,20 +42,16 @@ function SignUpRoutePage() {
         <form className="login-form" onSubmit={ userJoin }>
         <h1>회원가입</h1>
 
-        <input type="text" id="userId" 
-            placeholder="아이디" required
+        <input type="text" id="userId" placeholder="아이디" required
             value={user.userId} onChange={handleChange}/>
 
-        <input type="password" id="userPw"
-          placeholder="비밀번호" required
+        <input type="password" id="userPw" placeholder="비밀번호" required
           value={user.userPw} onChange={handleChange}/>
 
-        <input type="text" id="userName"
-          placeholder="이름" required
-           value={user.userName} onChange={handleChange}/>
+        <input type="text" id="userName" placeholder="이름" required
+         value={user.userName} onChange={handleChange}/>
 
-        <input type="email" id="userEmail"
-          placeholder="이메일" required
+        <input type="email" id="userEmail" placeholder="이메일" required
           value={user.userEmail} onChange={handleChange}/>
 
         <button type="submit">회원가입</button>

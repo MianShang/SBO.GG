@@ -22,7 +22,7 @@ public class AuthController {
         if (context != null) {
             // 유저 정보
             MyUserDetailsService.CustomUserDetails user = (MyUserDetailsService.CustomUserDetails) auth.getPrincipal();
-            System.out.println("유저정보 " + user.toString());
+            //System.out.println("유저정보 " + user.toString());
 
             return ResponseEntity.ok().build(); // 로그인 되어 있음
         } else {

@@ -7,10 +7,11 @@ import './routePage.css'
 import { LogContext } from '../../../App.jsx'
 
 function LogInRoutePage() {
+  // navigate 객체 생성
   const navigate = useNavigate();
 
   // State 보관함 해체
-  let {isLogIn, setIsLogIn}  = useContext(LogContext);
+  let {isLogIn, setIsLogIn, setUserData}  = useContext(LogContext);
 
   console.log(isLogIn)
 
@@ -46,20 +47,24 @@ function LogInRoutePage() {
       withCredentials: true
     })
     .then((res) => {
+
       // 로그인 성공시 반환 데이터 출력
       console.log(res)
 
+      // 로그인 성공시 유저 정보를 전역 유저 데이터 State Set
+      axios.get('/api/user/get-data', { withCredentials: true })
+        .then((res) => {
+          //console.log(res.data);
+          // 전역으로 관리할 유저 데이터 State Set
+          const { userId, userName, userEmail } = res.data;
+          setUserData({ userId, userName, userEmail }); 
+        })
+
+      // 로그인 여부 Context API TRUE
       setIsLogIn(true);
 
       // 로그인 성공시 로비 컴포넌트로('/')
       navigate('/');
-
-      // 로그인 성공시 유저 정보 받기
-      axios.get('/api/user/get-data', { withCredentials: true })
-      .then((res) => {
-        console.log(res.data);
-      })
-
     })
     .catch((err) => {
       console.error(err);
@@ -67,23 +72,24 @@ function LogInRoutePage() {
   }
 
 
-    return (
-        <div className="LogRoutePageStyle fullscreen">
+  return (
+    <div className="LogRoutePageStyle fullscreen">
 
-            <form className="login-form" onSubmit={handleSubmit}>
-                {/* 상단 로그인 문구 */}
-                <div>
-                    <h1>로그인 </h1>
-                </div>
-
-                <input type="text" name="username" placeholder='ID' required
-                    value={credentials.username} onChange={handleChange} />
-                <input type="password" name="password" placeholder='PW' required
-                    value={credentials.password} onChange={handleChange} /> 
-
-                <button type="submit">로그인</button>
-            </form>
+      <form className="login-form" onSubmit={handleSubmit}>
+        {/* 상단 로그인 문구 */}
+        <div>
+            <h1>로그인 </h1>
         </div>
+
+        <input type="text" name="username" placeholder='ID' required
+            value={credentials.username} onChange={handleChange} />
+
+        <input type="password" name="password" placeholder='PW' required
+            value={credentials.password} onChange={handleChange} /> 
+
+        <button type="submit">로그인</button>
+      </form>
+    </div>
   );
 }
 export default LogInRoutePage

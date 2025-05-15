@@ -7,11 +7,11 @@ import './lobbyPage.css'
 import ChatListPage from './lobbyPageRoute/chatListPage.jsx';
 import FriendListPage from './lobbyPageRoute/friendListPage.jsx';
 
+// 로그인 체크용 Comtext API import
 import { LogContext } from '../../App.jsx'
 
 
 function LobbyPage() {
-
   // navigate 객체 생성
   const navigate = useNavigate();
 
@@ -22,22 +22,24 @@ function LobbyPage() {
   const [toggle, setToggle] = useState(true);
 
   // State 보관함 해체
-  const {isLogIn, setIsLogIn} = useContext(LogContext)
+  const {isLogIn, setIsLogIn, userData} = useContext(LogContext)
 
-  // 로그인 여부 검사
+  // 로그인 여부 검사 Effect
+  // 로그아웃시 isLogIn State의 변화에 의해 실행
+  // 로그아웃 상태로 '/' 접근시 '/login'으로 navigate
   useEffect(()=>{
-    // 로그아웃 상태로 '/' 접근시 '/login'으로 navigate
-    if(!isLogIn) { navigate('/login') }
+    if(!isLogIn) {
+      navigate('/login')
+    }
   },[isLogIn])
-  
-  // 로그아웃 처리
+
+  // 로그아웃 처리 API
   function logoutFunc() {
     axios.post('/api/logout')
     .then((res) =>{
       console.log(res)
-
-      // 로그아웃시 로그인 여부 Context false
-      // 상단의 Effect가 isLogin 검사 후 바로 로그인 페이지로 이동
+      
+      // 로그아웃시 로그인 여부 Context State FALSE
       setIsLogIn(false);
     })
     .catch((err) => {
@@ -67,12 +69,15 @@ function LobbyPage() {
               {/* 정보 수정 */}
               <div className='sideBarDetailSize'>
                 정보수정
+                <p>ID : {userData.userId}</p>
+                <p>Name : {userData.userName}</p>
+                <p>Email : {userData.userEmail}</p>
               </div>
 
               {/* 완료 버튼 */}
               {/* 클릭시 setShowMidBar true*/}
               <div className='sideBarButtonBox'>
-                <div className='sideBarButton' onClick={() =>{ setShowMidBar(true);}}>
+                <div className='sideBarButton' onClick={() =>{ setShowMidBar(true); }}>
                   완료
                 </div>
               </div> 

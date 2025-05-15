@@ -6,14 +6,11 @@ import './loginPage.css'
 import LogInRoutePage from './loginPageRoute/loginRoutePage';
 import SignUpRoutePage from './loginPageRoute/signupRoutePage';
 
-import { LogContext } from '../../App.jsx'
 
 function LoginPage() {
   // 기본값은 로그인 페이지로
   const [isResister, setIsRegister] = useState(false);
 
-  // State 보관함 해체
-  let {isLogIn, setIsLogIn}  = useContext(LogContext);
 
   return (
     <div className='fullscreen position'>
@@ -25,7 +22,7 @@ function LoginPage() {
       </div>
 
 
-      <div className='LogChangeButtonStyle' onClick={()=>{setIsRegister(!isResister)}}>
+      <div className='LogChangeButtonStyle' onClick={()=>{ setIsRegister(!isResister) }}>
         {
           isResister ? <h2>Login</h2> : <h2>Signup</h2>
         }
