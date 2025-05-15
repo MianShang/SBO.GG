@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useContext  } from 'react'
 import { Routes, Route, Link } from 'react-router-dom'
 import axios from 'axios';
 import './loginPage.css'
@@ -6,9 +6,14 @@ import './loginPage.css'
 import LogInRoutePage from './loginPageRoute/loginRoutePage';
 import SignUpRoutePage from './loginPageRoute/signupRoutePage';
 
+import { LogContext } from '../../App.jsx'
+
 function LoginPage() {
   // 기본값은 로그인 페이지로
   const [isResister, setIsRegister] = useState(false);
+
+  // State 보관함 해체
+  let {isLogIn, setIsLogIn}  = useContext(LogContext);
 
   return (
     <div className='fullscreen position'>
@@ -26,8 +31,6 @@ function LoginPage() {
         }
       </div>
       
-      {/* 개발시 테스트 위해 남겨둠 삭제 예정*/}
-      <Link to="/">메인으로</Link>
     </div>
   )
 }

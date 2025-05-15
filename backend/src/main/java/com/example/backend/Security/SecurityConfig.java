@@ -46,13 +46,13 @@ public class SecurityConfig {
                         .requestMatchers("/user/**").authenticated()
                         .anyRequest().permitAll()
                 )
-                // 로그인 url
+                // 로그인 api
                 .formLogin(form -> form
                         .loginPage("/login")
                         .loginProcessingUrl("/api/loginProc")
                         .defaultSuccessUrl("/loginOk", true)
                 )
-                // 로그아웃 url
+                // 로그아웃 api
                 .logout(logout -> logout
                         .logoutUrl("/api/logout")
                         .logoutSuccessUrl("/logoutOk")

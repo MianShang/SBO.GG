@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react'
-import { Routes, Route, Link } from 'react-router-dom'
+import { useState, useEffect, useContext } from 'react'
+import { Routes, Route, Link, useNavigate  } from 'react-router-dom'
 import axios from 'axios';
 import './lobbyPage.css'
 
@@ -7,14 +7,43 @@ import './lobbyPage.css'
 import ChatListPage from './lobbyPageRoute/chatListPage.jsx';
 import FriendListPage from './lobbyPageRoute/friendListPage.jsx';
 
+import { LogContext } from '../../App.jsx'
+
+
 function LobbyPage() {
-  // 사이드바 프로필 이미지 클릭시 중앙 div는 사라지게
-  // 기본값 true(중앙 div 표시)
+
+  // navigate 객체 생성
+  const navigate = useNavigate();
+
+  // 사이드바 프로필 이미지 클릭시 중앙 div는 사라지게 - 기본값 true(중앙 div 표시)
   const [showMidBar, setShowMidBar] = useState(true);
 
-  // toggle State를 기준으로 채팅 / 친구 컴포넌트 교체
-  // 기본값 true (채팅)
+  // toggle State를 기준으로 채팅 / 친구 컴포넌트 교체 - 기본값 true (채팅)
   const [toggle, setToggle] = useState(true);
+
+  // State 보관함 해체
+  const {isLogIn, setIsLogIn} = useContext(LogContext)
+
+  // 로그인 여부 검사
+  useEffect(()=>{
+    // 로그아웃 상태로 '/' 접근시 '/login'으로 navigate
+    if(!isLogIn) { navigate('/login') }
+  },[isLogIn])
+  
+  // 로그아웃 처리
+  function logoutFunc() {
+    axios.post('/api/logout')
+    .then((res) =>{
+      console.log(res)
+
+      // 로그아웃시 로그인 여부 Context false
+      // 상단의 Effect가 isLogin 검사 후 바로 로그인 페이지로 이동
+      setIsLogIn(false);
+    })
+    .catch((err) => {
+      console.error(err);
+    });
+  }
   
   return (
     <div className='fullscreen' style={{display:"flex", padding:"10px"}}>
@@ -28,9 +57,13 @@ function LobbyPage() {
         <img src="https://placehold.co/375x375" onClick={() =>{ setShowMidBar(false);}}
          className={`${showMidBar ? 'sideBarImgSize' : 'sideBarImgSizeExpanded'}`} />
 
+         
          {/* showMidBar false일시 정보 수정창 표시 */}
-         { showMidBar ? null :
-            <>
+         { showMidBar ? 
+            <div>
+              <p onClick={()=>{ logoutFunc() }}>로그아웃</p>
+            </div> 
+            : <>
               {/* 정보 수정 */}
               <div className='sideBarDetailSize'>
                 정보수정
@@ -46,11 +79,10 @@ function LobbyPage() {
             </>
           }
       </div>
-
-        
+  
       {/* 중간 친구/채팅 바 */}
       {
-        /* showMidBar State가 true시에만 표시 되는 div 영역*/
+        /* showMidBar State가 true시에만 표시 되는 div 영역 */
         showMidBar ? (
           <div className='midBarSize'>
 

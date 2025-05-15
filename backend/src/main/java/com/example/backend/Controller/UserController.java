@@ -28,9 +28,9 @@ public class UserController {
 
         // 입력칸 null 방지
         if(user.getUserId() == null
-                || user.getUserEmail() == null
-                || user.getUserPw() == null
-                || user.getUserName() == null) {
+                || user.getUserEmail()  == null
+                || user.getUserPw()     == null
+                || user.getUserName()   == null) {
             return ResponseEntity.badRequest().build();
         }
 
@@ -55,33 +55,6 @@ public class UserController {
         return ResponseEntity.ok("로그아웃 성공");
     }
 
-    // 로그인 여부
-    @GetMapping("/api/check-login")
-    public ResponseEntity<Void> checkLogin(HttpSession session) {
-        Object context = session.getAttribute("SPRING_SECURITY_CONTEXT");
 
-        if (context != null) {
-            return ResponseEntity.ok().build(); // 로그인 되어 있음
-        } else {
-            return ResponseEntity.status(401).build(); // 로그인 안 되어 있음
-        }
-    }
-
-    // 유저 정보 받아오기
-    @GetMapping("/api/user/get-data")
-    public ResponseEntity<UserDto> getData(Authentication auth) {
-        // UserDetailService
-        MyUserDetailsService.CustomUserDetails user = (MyUserDetailsService.CustomUserDetails) auth.getPrincipal();
-        // 테스트용 출력
-        System.out.println(user.toString());
-
-        //UserDTO
-        UserDto userDto = new UserDto();
-
-        userDto.setUserId(user.userId);
-        userDto.setUserName(user.getUsername());
-
-        return ResponseEntity.ok(userDto);
-    }
 
 }

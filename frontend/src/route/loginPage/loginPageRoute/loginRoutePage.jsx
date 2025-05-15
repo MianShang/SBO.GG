@@ -1,25 +1,33 @@
-import { useState, useEffect } from 'react'
-import { Routes, Route, Link } from 'react-router-dom'
+import { useState, useEffect, useContext } from 'react'
+import { Routes, Route, Link, useNavigate } from 'react-router-dom'
 import axios from 'axios';
 import './routePage.css'
 
+// 로그인 체크용 Context import
+import { LogContext } from '../../../App.jsx'
+
 function LogInRoutePage() {
+  const navigate = useNavigate();
 
-    // ID, PW 받을 State
-   const [credentials, setCredentials] = useState({
-        username: '',
-        password: ''
+  // State 보관함 해체
+  let {isLogIn, setIsLogIn}  = useContext(LogContext);
+
+  console.log(isLogIn)
+
+  // ID, PW 받을 State
+  const [credentials, setCredentials] = useState({
+    username: '',
+    password: ''
+  });
+
+  // State 자동 입력
+  function handleChange(e) {
+    const { name, value } = e.target;
+
+    setCredentials(function (prev) {
+      return {...prev, [name]: value};
     });
-
-    // State 자동 입력
-    function handleChange(e) {
-        const { name, value } = e.target;
-
-        setCredentials(function (prev) {
-        return {...prev, [name]: value};
-        });
-    }
-
+  }
     
   // 로그인 처리 함수
   function handleSubmit(e) {
@@ -38,8 +46,20 @@ function LogInRoutePage() {
       withCredentials: true
     })
     .then((res) => {
-      // 로그인 성공시 반반환 데이터 출력
+      // 로그인 성공시 반환 데이터 출력
       console.log(res)
+
+      setIsLogIn(true);
+
+      // 로그인 성공시 로비 컴포넌트로('/')
+      navigate('/');
+
+      // 로그인 성공시 유저 정보 받기
+      axios.get('/api/user/get-data', { withCredentials: true })
+      .then((res) => {
+        console.log(res.data);
+      })
+
     })
     .catch((err) => {
       console.error(err);
