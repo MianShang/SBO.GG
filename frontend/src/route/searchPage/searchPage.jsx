@@ -1,5 +1,6 @@
 import { useState, useEffect, useContext } from 'react'
 import { Routes, Route, Link, useNavigate} from 'react-router-dom'
+import { Client } from '@stomp/stompjs';
 import axios from 'axios';
 import './searchPage.css'
 
@@ -23,6 +24,65 @@ function SearchPage() {
   },[isLogIn])
 
 
+  const [name, setName] = useState('');
+   const [selectedRoom, setSelectedRoom] = useState(null);
+  const [client, setClient] = useState(null);
+  const [messages, setMessages] = useState([]);
+  const [input, setInput] = useState('')
+
+  // 채팅방 생성 API
+  function createRoom()  {
+    axios.post('/api/chat/rooms', null, {
+      params: { name }, // 채팅방 이름 전송
+    })
+      .then((res) => {
+        setName('');     
+      })
+      .catch((err) => console.error(' 방 생성 실패', err));
+  };
+
+
+  // 채팅방 연결
+  useEffect(() => {
+    if (!selectedRoom) return;
+
+    setMessages([]); // 방 변경 시 기존 메시지 초기화
+
+    const stomp = new Client({
+      brokerURL: `ws://localhost:8080/gs-guide-websocket`,
+      reconnectDelay: 5000,
+
+      onConnect: () => {
+        console.log('STOMP 연결 성공');
+        stomp.subscribe(`/topic/chat/${selectedRoom.id}`, (msg) => {
+          console.log('받은 메시지 body:', msg.body);
+          // 메시지를 새로운 메시지로 업데이트
+          setMessages((prev) => [...prev, JSON.parse(msg.body)]);
+        });
+      },
+    });
+
+    stomp.activate();
+    setClient(stomp);
+
+    return () => {
+      stomp.deactivate(); // 컴포넌트 unmount 시 STOMP 연결 해제
+    };
+  }, [selectedRoom]); // selectedRoom이 변경될 때마다 실행
+
+
+  // 메시지 전송
+  const sendMessage = () => {
+    if (client && input.trim()) {
+      client.publish({
+        destination: `/app/chat/${selectedRoom.id}`,
+        body: JSON.stringify({ name: 'QMatch', message: input }), // 메시지 전송
+      });
+      setInput(''); // 메시지 전송 후 input 초기화
+    }
+  };
+
+
   return (
     <div className='fullscreen' style={{display:"flex", padding:"10px"}}>
 
@@ -42,7 +102,13 @@ function SearchPage() {
 
         {/* 채팅방 리스트 */}
         <div className='contentStyle chatListSize'>
-          채팅방 리스트
+          <div>
+            <input type="text" value={name} placeholder="채팅방 이름"
+              onChange={(e) => setName(e.target.value)}
+              className="create-room-input"
+            />
+            <button onClick={createRoom}>방 만들기</button>
+          </div>
         </div>
           
 

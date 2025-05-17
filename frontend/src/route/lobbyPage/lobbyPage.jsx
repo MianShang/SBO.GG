@@ -1,5 +1,6 @@
 import { useState, useEffect, useContext } from 'react'
 import { Routes, Route, Link, useNavigate  } from 'react-router-dom'
+import { Client } from '@stomp/stompjs';
 import axios from 'axios';
 import './lobbyPage.css'
 
@@ -46,6 +47,56 @@ function LobbyPage() {
       console.error(err);
     });
   }
+
+  // ======================================================================
+  const [selectedRoom, setSelectedRoom] = useState(null);
+  const [client, setClient] = useState(null);
+  const [messages, setMessages] = useState([]);
+  const [input, setInput] = useState('');
+
+  
+  // 채팅방 연결
+  // selectedRoom이 변경될 때마다 실행
+  useEffect(() => {
+    if (!selectedRoom) return;
+
+    setMessages([]); // 방 변경 시 기존 메시지 초기화
+
+    const stomp = new Client({
+      brokerURL: `ws://localhost:8080/gs-guide-websocket`,
+      reconnectDelay: 5000,
+
+      onConnect: () => {
+        console.log('STOMP 연결 성공');
+        stomp.subscribe(`/topic/chat/${selectedRoom.id}`, (msg) => {
+          console.log('받은 메시지 body:', msg.body);
+          // 메시지를 새로운 메시지로 업데이트
+          setMessages((prev) => [...prev, JSON.parse(msg.body)]);
+        });
+      },
+    });
+
+    stomp.activate();
+    setClient(stomp);
+
+    return () => {
+      stomp.deactivate(); // 컴포넌트 unmount 시 STOMP 연결 해제
+    };
+  }, [selectedRoom]); 
+
+
+  // 메시지 전송
+  const sendMessage = () => {
+    if (client && input.trim()) {
+      client.publish({
+        destination: `/app/chat/${selectedRoom.id}`,
+        body: JSON.stringify({ name: `${userData.userName}`, message: input }), // 메시지 전송
+      });
+    setInput(''); // 메시지 전송 후 input 초기화
+    }
+  }
+
+  // ======================================================================
   
   return (
     <div className='fullscreen' style={{display:"flex", padding:"10px"}}>
@@ -110,7 +161,8 @@ function LobbyPage() {
             {/* 토글 버튼 하단의 각 리스트 div*/}
             <div className='listSize'>
               {      
-                toggle ? <ChatListPage /> : <FriendListPage />
+                toggle ? 
+                <ChatListPage setSelectedRoom = { setSelectedRoom } /> : <FriendListPage />
               }
             </div>
           </div>
@@ -122,8 +174,28 @@ function LobbyPage() {
       <div className='rightBarSize'>
 
         {/* 상단 채팅창 */}
-        <div className='contentStyle chatSize'>
+        <div className='contentStyle chatSize' style={{textAlign:"left"}}>
           채팅창임
+
+          {/* 메시지 목록 출력 */}
+          <div style={{color:"white"}}>
+            {messages.map((msg, i) => (
+              <div key={i}>
+                <strong>{msg.name}</strong>: {msg.message}
+              </div>
+            ))}
+          </div>
+
+          <div className="inputLocation inputSize">
+            <input
+              type="text"
+              value={input}
+              onChange={(e) => setInput(e.target.value)} // 입력값 업데이트
+              placeholder="메시지를 입력하세요"
+              className=""/>
+            <button onClick={sendMessage}>보내기</button> {/* 메시지 전송 */}
+        </div>
+
         </div>
 
         {/* 하단 돋보기 검색바 */}
