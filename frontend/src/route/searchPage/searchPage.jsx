@@ -13,8 +13,8 @@ function SearchPage() {
   const navigate = useNavigate();
 
   // State 보관함 해체
-  const {isLogIn, setIsLogIn} = useContext(LogContext)
-
+  const {isLogIn, setIsLogIn, userData} = useContext(LogContext)
+  
   // 로그인 여부 검사 Effect
   // 로그아웃 상태로 '/' 접근시 '/login'으로 navigate
   useEffect(()=>{
@@ -25,63 +25,41 @@ function SearchPage() {
 
 
   const [name, setName] = useState('');
-   const [selectedRoom, setSelectedRoom] = useState(null);
-  const [client, setClient] = useState(null);
-  const [messages, setMessages] = useState([]);
-  const [input, setInput] = useState('')
+  const [rooms, setRooms] = useState([]);
+
+   // 처음 url에 입장할때 목록 가져오기 실행
+  useEffect(() => {
+    axios.get('/api/chat/rooms')
+      .then((res) => {
+        setRooms(res.data);   // rooms에 채팅방
+      })
+      .catch((err) => console.error('방 목록 가져오기 실패', err));
+  }, []);
 
   // 채팅방 생성 API
-  function createRoom()  {
+  function createRoom() {
     axios.post('/api/chat/rooms', null, {
       params: { name }, // 채팅방 이름 전송
     })
-      .then((res) => {
-        setName('');     
-      })
-      .catch((err) => console.error(' 방 생성 실패', err));
-  };
+    .then((res) => {
+      setName('');     
+    })
+    .catch((err) => console.error(' 방 생성 실패', err));
+  }
 
+  // 유저의 채팅방 저장 API
+  function saveUserChatRoom(roomId){
+    axios.post('/api/add/user/chatroom', {
+      userId: userData.userId,
+      roomId: roomId
+    })
+    .then((res) => {
+        console.log("성공")
+    })
+    .catch((err) => console.error('저장 실패', err));
+  }
 
-  // 채팅방 연결
-  useEffect(() => {
-    if (!selectedRoom) return;
-
-    setMessages([]); // 방 변경 시 기존 메시지 초기화
-
-    const stomp = new Client({
-      brokerURL: `ws://localhost:8080/gs-guide-websocket`,
-      reconnectDelay: 5000,
-
-      onConnect: () => {
-        console.log('STOMP 연결 성공');
-        stomp.subscribe(`/topic/chat/${selectedRoom.id}`, (msg) => {
-          console.log('받은 메시지 body:', msg.body);
-          // 메시지를 새로운 메시지로 업데이트
-          setMessages((prev) => [...prev, JSON.parse(msg.body)]);
-        });
-      },
-    });
-
-    stomp.activate();
-    setClient(stomp);
-
-    return () => {
-      stomp.deactivate(); // 컴포넌트 unmount 시 STOMP 연결 해제
-    };
-  }, [selectedRoom]); // selectedRoom이 변경될 때마다 실행
-
-
-  // 메시지 전송
-  const sendMessage = () => {
-    if (client && input.trim()) {
-      client.publish({
-        destination: `/app/chat/${selectedRoom.id}`,
-        body: JSON.stringify({ name: 'QMatch', message: input }), // 메시지 전송
-      });
-      setInput(''); // 메시지 전송 후 input 초기화
-    }
-  };
-
+ 
 
   return (
     <div className='fullscreen' style={{display:"flex", padding:"10px"}}>
@@ -89,6 +67,9 @@ function SearchPage() {
       {/* 좌측 사이드바 */}
       <div className='contentStyle leftSize'>
         여긴 카테고리
+        <p>ID : {userData.userId}</p>
+        <p>Name : {userData.userName}</p>       
+        <p>Email : {userData.userEmail}</p>
       </div>
 
       {/* 우측 사이드바 */}
@@ -102,13 +83,29 @@ function SearchPage() {
 
         {/* 채팅방 리스트 */}
         <div className='contentStyle chatListSize'>
+
+          {/* 채팅방 리스트 */}
           <div>
-            <input type="text" value={name} placeholder="채팅방 이름"
-              onChange={(e) => setName(e.target.value)}
-              className="create-room-input"
-            />
+            채팅 리스트
+            {
+              rooms.map((room) => (
+                <div
+                  key={room.id}
+                  onClick={() => { saveUserChatRoom(room.id); }} // 채팅방 선택
+                  style={{color:"white"}}>
+                  <hr/>
+                  <div>{room.name} {room.id}</div>
+                </div>
+              ))
+            }
+          </div>
+          
+          {/* 채팅방 생성성 */}
+          <div>
+            <input type="text" value={name} onChange={(e) => setName(e.target.value)}/>
             <button onClick={createRoom}>방 만들기</button>
           </div>
+
         </div>
           
 

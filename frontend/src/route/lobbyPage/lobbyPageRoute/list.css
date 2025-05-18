@@ -4,11 +4,30 @@
 }
 
 .listRouteSize{
-    height: 100%;
+    height: calc(100% - 20px);
+    padding: 10px;
 }
 
 .contentListStyle{
     background-color: rgb(38, 38, 38);
     border-radius: 12px;
-    text-align: center;
+    text-align: center;   
+}
+
+.chatListStyle{
+    border: 1px solid;
+    border-radius: 7px;
+
+    width: 100%;
+    height: 90px;
+    margin-bottom: 10px;
+}
+
+.chatListStyleExtend{
+    border: 1px solid;
+    border-radius: 7px;
+
+    width: 100%;
+    height: 300px;
+    margin-bottom: 10px;
 }

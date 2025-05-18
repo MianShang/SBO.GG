@@ -48,35 +48,35 @@ function LobbyPage() {
     });
   }
 
+  // 채팅방 연결 로직
   // ======================================================================
-  const [selectedRoom, setSelectedRoom] = useState(null);
-  const [client, setClient] = useState(null);
-  const [messages, setMessages] = useState([]);
-  const [input, setInput] = useState('');
+  const [selectedRoom, setSelectedRoom] = useState();
+  const [roomName, setRoomName]         = useState();
+  const [client, setClient]             = useState(null);
+  const [messages, setMessages]         = useState([]);
+  const [input, setInput]               = useState('');
 
   
   // 채팅방 연결
   // selectedRoom이 변경될 때마다 실행
   useEffect(() => {
-    if (!selectedRoom) return;
-
-    setMessages([]); // 방 변경 시 기존 메시지 초기화
-
+    // https://www.npmjs.com/package/@stomp/stompjs 문서 참조
     const stomp = new Client({
-      brokerURL: `ws://localhost:8080/gs-guide-websocket`,
+      brokerURL: 'ws://localhost:8080/gs-guide-websocket', // 'ws://'로 시작하는 WebSocket URL
       reconnectDelay: 5000,
 
       onConnect: () => {
-        console.log('STOMP 연결 성공');
-        stomp.subscribe(`/topic/chat/${selectedRoom.id}`, (msg) => {
-          console.log('받은 메시지 body:', msg.body);
-          // 메시지를 새로운 메시지로 업데이트
-          setMessages((prev) => [...prev, JSON.parse(msg.body)]);
+        console.log(`${selectedRoom} STOMP 연결 성공`);
+
+        // 해당 방 Id로 구독
+        stomp.subscribe(`/topic/chat/${selectedRoom}`, msg => {
+          // 구독한 Id에서 오는 문자를 map에 전부 담아버림
+          setMessages(prev => [...prev, JSON.parse(msg.body)]);
         });
       },
     });
 
-    stomp.activate();
+    stomp.activate();   // stomp 활성화
     setClient(stomp);
 
     return () => {
@@ -88,8 +88,9 @@ function LobbyPage() {
   // 메시지 전송
   const sendMessage = () => {
     if (client && input.trim()) {
+
       client.publish({
-        destination: `/app/chat/${selectedRoom.id}`,
+        destination: `/app/chat/${selectedRoom}`,
         body: JSON.stringify({ name: `${userData.userName}`, message: input }), // 메시지 전송
       });
     setInput(''); // 메시지 전송 후 input 초기화
@@ -162,7 +163,9 @@ function LobbyPage() {
             <div className='listSize'>
               {      
                 toggle ? 
-                <ChatListPage setSelectedRoom = { setSelectedRoom } /> : <FriendListPage />
+                <ChatListPage 
+                  setSelectedRoom = { setSelectedRoom } /> 
+                : <FriendListPage />
               }
             </div>
           </div>
@@ -179,11 +182,13 @@ function LobbyPage() {
 
           {/* 메시지 목록 출력 */}
           <div style={{color:"white"}}>
-            {messages.map((msg, i) => (
-              <div key={i}>
-                <strong>{msg.name}</strong>: {msg.message}
-              </div>
-            ))}
+            {
+              messages.map((msg, i) => (
+                <div key={i}>
+                  <strong>{msg.name}</strong>: {msg.message}
+                </div>
+              ))
+            }
           </div>
 
           <div className="inputLocation inputSize">

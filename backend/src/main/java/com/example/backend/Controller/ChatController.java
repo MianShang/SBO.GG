@@ -48,7 +48,7 @@ public class ChatController {
     @PostMapping("/rooms")
     public ChatRoom createRoom(@RequestParam String name) {
 
-        // 생성자를 통해 방 이름ㄱ
+        // 생성자를 통해 방 id, 이름 객체 생성
         ChatRoom room = new ChatRoom(UUID.randomUUID().toString(), name);
 
         // DB 저장
