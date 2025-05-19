@@ -5,12 +5,15 @@ import axios from 'axios';
 import './lobbyPage.css'
 
 // 컴포넌트 import
-import ChatListPage from './lobbyPageRoute/chatListPage.jsx';
+import ChatListPage   from './lobbyPageRoute/chatListPage.jsx';
 import FriendListPage from './lobbyPageRoute/friendListPage.jsx';
 
 // 로그인 체크용 Comtext API import
 import { LogContext } from '../../App.jsx'
 
+// hooks import
+import { useChatSubscriber }  from '../../hooks/chat/useChatSubscriber.js'
+import { useChatSender }      from '../../hooks/chat/useChatSender.js'
 
 function LobbyPage() {
   // navigate 객체 생성
@@ -22,16 +25,26 @@ function LobbyPage() {
   // toggle State를 기준으로 채팅 / 친구 컴포넌트 교체 - 기본값 true (채팅)
   const [toggle, setToggle] = useState(true);
 
+  const [selectedRoom, setSelectedRoom] = useState();       // 선택한 방 State
+  const [messages, setMessages]         = useState([]);     // 보낼 메세지지
+  const [client, setClient]             = useState(null);   // client 연결 여부 State
+  const [input, setInput]               = useState('');     // input 입력 Sate
+
   // State 보관함 해체
   const {isLogIn, setIsLogIn, userData} = useContext(LogContext)
+
+  // 구독 훅 호출
+  useChatSubscriber(selectedRoom, setMessages, setClient);
+
+  // 전송 훅 생성 함수를 담음음
+  const sendMessage = useChatSender(client, selectedRoom, userData.userName, input, setInput);
+
 
   // 로그인 여부 검사 Effect
   // 로그아웃시 isLogIn State의 변화에 의해 실행
   // 로그아웃 상태로 '/' 접근시 '/login'으로 navigate
   useEffect(()=>{
-    if(!isLogIn) {
-      navigate('/login')
-    }
+    if(!isLogIn) { navigate('/login'); }
   },[isLogIn])
 
   // 로그아웃 처리 API
@@ -47,58 +60,8 @@ function LobbyPage() {
       console.error(err);
     });
   }
+ 
 
-  // 채팅방 연결 로직
-  // ======================================================================
-  const [selectedRoom, setSelectedRoom] = useState();
-  const [roomName, setRoomName]         = useState();
-  const [client, setClient]             = useState(null);
-  const [messages, setMessages]         = useState([]);
-  const [input, setInput]               = useState('');
-
-  
-  // 채팅방 연결
-  // selectedRoom이 변경될 때마다 실행
-  useEffect(() => {
-    // https://www.npmjs.com/package/@stomp/stompjs 문서 참조
-    const stomp = new Client({
-      brokerURL: 'ws://localhost:8080/gs-guide-websocket', // 'ws://'로 시작하는 WebSocket URL
-      reconnectDelay: 5000,
-
-      onConnect: () => {
-        console.log(`${selectedRoom} STOMP 연결 성공`);
-
-        // 해당 방 Id로 구독
-        stomp.subscribe(`/topic/chat/${selectedRoom}`, msg => {
-          // 구독한 Id에서 오는 문자를 map에 전부 담아버림
-          setMessages(prev => [...prev, JSON.parse(msg.body)]);
-        });
-      },
-    });
-
-    stomp.activate();   // stomp 활성화
-    setClient(stomp);
-
-    return () => {
-      stomp.deactivate(); // 컴포넌트 unmount 시 STOMP 연결 해제
-    };
-  }, [selectedRoom]); 
-
-
-  // 메시지 전송
-  const sendMessage = () => {
-    if (client && input.trim()) {
-
-      client.publish({
-        destination: `/app/chat/${selectedRoom}`,
-        body: JSON.stringify({ name: `${userData.userName}`, message: input }), // 메시지 전송
-      });
-    setInput(''); // 메시지 전송 후 input 초기화
-    }
-  }
-
-  // ======================================================================
-  
   return (
     <div className='fullscreen' style={{display:"flex", padding:"10px"}}>
      

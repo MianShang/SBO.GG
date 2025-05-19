@@ -92,8 +92,8 @@ function SearchPage() {
                 <div
                   key={room.id}
                   onClick={() => { saveUserChatRoom(room.id); }} // 채팅방 선택
-                  style={{color:"white"}}>
-                  <hr/>
+                  style={{color:"white", border:"1px solid", margin: "10px", height:"50px"}}>
+                  
                   <div>{room.name} {room.id}</div>
                 </div>
               ))

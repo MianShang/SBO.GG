@@ -60,18 +60,8 @@ public class UserChatRoomController {
     
     @GetMapping("/api/get/user/chatrooms")
     public List<UserChatRoom> getUserChatRooms(@RequestParam String userId) {
-        System.out.println("ㅎㅇㅎㅇ");
-        System.out.println(userId);
 
         List<UserChatRoom> userChatRooms = userChatRoomRepository.findByUser_UserId(userId);
-
-        System.out.println(userChatRooms);
-
-        // 채팅방 ID만 출력
-        for (UserChatRoom ucr : userChatRooms) {
-            System.out.println(ucr.getChatRoom().getId());
-            System.out.println(ucr.getChatRoom().getName());
-        }
 
         return userChatRooms;
     }
