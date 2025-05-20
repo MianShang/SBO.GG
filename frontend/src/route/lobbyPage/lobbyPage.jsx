@@ -36,7 +36,7 @@ function LobbyPage() {
   // 구독 훅 호출
   useChatSubscriber(selectedRoom, setMessages, setClient);
 
-  // 전송 훅 생성 함수를 담음음
+  // 전송 훅 생성 함수를 담음
   const sendMessage = useChatSender(client, selectedRoom, userData.userName, input, setInput);
 
 
@@ -127,6 +127,7 @@ function LobbyPage() {
               {      
                 toggle ? 
                 <ChatListPage 
+                  selectedRoom = {selectedRoom}
                   setSelectedRoom = { setSelectedRoom } /> 
                 : <FriendListPage />
               }

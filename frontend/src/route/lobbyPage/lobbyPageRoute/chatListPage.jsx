@@ -11,29 +11,93 @@ import { LogContext } from '../../../App.jsx'
 // Custom Hook import
 import { useChatGetRooms } from '../../../hooks/chat/useChatGetRooms.js'
 
-function chatListPage({setSelectedRoom}) {
+function chatListPage({selectedRoom, setSelectedRoom}) {
 
   // State 보관함 해체
-  const {isLogIn, setIsLogIn, userData} = useContext(LogContext)
+  const {userData} = useContext(LogContext)
 
   // State 선언
-  const [chatList, setChatList] = useState([]);                 // 해당당
+  const [chatList, setChatList] = useState([]);                 
   const [chatListExtend, setChatListExtend] = useState(false);
 
+  const [chatUserList, setChatUserList] = useState([]);
+
+  // 로그인한 유저의 채팅방 가져오는 커스텀 훅
   useChatGetRooms(userData, setChatList);
- 
+
+  // 채팅방의 유저 목록을 가져오는 함수수
+  function getChatUserList(roomId){
+
+    axios.get('api/get/user/chatlist', {
+      // Context에 저장된 userId로 get 요청
+      params: { 
+        roomId: roomId
+      }
+    })
+    .then((res) => {
+      setChatUserList(res.data);
+    })
+    .catch((err) => console.error('방 아이디 보내기 실패', err));
+  }
+
+  // 자기가 구독한 방 삭제하는 함수
+  function deleteUserRoom(userRoomTablePri){
+
+    // 삭제 API 요청
+    axios.post('/api/user/delete/userchatroom', {
+      roomId: userRoomTablePri  // 해당 테이블의 기본키 전송 
+    })
+    .then((res) => {
+      console.log('삭제 성공:', res.data);
+    })
+    .catch((err) => {
+      console.error('삭제 실패:', err);
+    });
+  }
+
   return (
     <div className='listRouteSize contentStyle' style={{color:"white"}}>
        {
+        // 채팅방 목록 출력
         chatList.map((item, i) => (
-        <div key={item.id}  className={`${chatListExtend ? 'chatListStyleExtend' : 'chatListStyle'}`}
-          onClick={()=>{ setSelectedRoom(item.chatRoom.id); }}>
-          <p>{item.chatRoom.name}</p>
-     
-          <p onClick={()=>{setChatListExtend(!chatListExtend)}}>[더보기]</p>
-         
+
+          
+          <div key={item.id} className={`${chatListExtend  ? 'chatListStyleExtend' : 'chatListStyle'}`} >
+            
+            {/* 스타일 임시로 지정 */}
+            <div style={{display:"flex", textAlign:"center", height:"40px"}}>
+
+              {/* 선택시 방 ID를 방 구독 커스텀훅으로 전달*/}
+              <p onClick={()=>{ setSelectedRoom(item.chatRoom.id); }}>{item.chatRoom.name} </p>
+
+              {/* [삭제] 클릭시 유저 저장 채팅방 테이블의 기본키를 전송하여 요청청 */}
+              <p onClick={()=>{ deleteUserRoom(item.id);}}>--[삭제]</p>
+
+            </div>
+          
+
+            {
+              // [더보기] 클릭시 채팅방에 저장한 유저 리스트 출력
+              chatListExtend  ? 
+              <div style={{border: "1px solid red", height:"200px", overflowY: "auto" }}>
+                <p>접속 유저 목록</p>
+                {
+                  // 유저 아이디 - 유저 이름 출력
+                  chatUserList.map((item, i) => (
+                    <div key={ item.userId }>
+                          <p>{ item.userId } - { item.userName }</p>
+                    </div>
+                  ))
+                }
+              </div> 
+              : null
+            }
+
+            {/* 더보기 버튼은 클릭시 css State 값 반전과 유저 리스트 커스텀 훅을 실행한다*/}
+            <p onClick={()=>{setChatListExtend(!chatListExtend); getChatUserList(item.chatRoom.id); }}>[더보기]</p>
         </div>
-      ))}
+      ))
+      }
     </div>
   )
 }
