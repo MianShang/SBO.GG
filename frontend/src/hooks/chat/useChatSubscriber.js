@@ -14,10 +14,10 @@ export function useChatSubscriber(selectedRoom, setMessages, setClient) {
       onConnect: () => {
         // 방 선택시 콘솔 출력
         if(selectedRoom){
-          console.log(`${selectedRoom} STOMP 연결 성공`);
+          console.log(`${selectedRoom.id} STOMP 연결 성공`);
         }
 
-        stomp.subscribe(`/topic/chat/${selectedRoom}`, msg => {
+        stomp.subscribe(`/topic/chat/${selectedRoom.id}`, msg => {
           // Message State Set
           setMessages(prev => [...prev, JSON.parse(msg.body)]);
         });

@@ -14,9 +14,10 @@ import java.util.List;
 @Setter
 public class ChatRoom {
     @Id
-    private String id;
-    private String name;
-    
+    private String id;          // 채팅방 id
+    private String name;        // 채팅방 이름
+    private String gameName;    // 무슨 게임의 채팅방인지
+
     // 기본 생성자
     protected ChatRoom() { }
 

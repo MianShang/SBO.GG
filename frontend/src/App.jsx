@@ -53,7 +53,7 @@ function App() {
       const interval = setInterval(() => {
         axios.get('/api/check-login', { withCredentials: true })
           .then((res) => {
-            console.log("Check LogIn")
+            //console.log("Check LogIn")
             setIsLogIn(true);
           })
           .catch(() => {

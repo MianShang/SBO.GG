@@ -44,7 +44,7 @@ function SearchPage() {
     .then((res) => {
       setName('');     
     })
-    .catch((err) => console.error(' 방 생성 실패', err));
+    .catch((err) => console.error('방 생성 실패', err));
   }
 
   // 유저의 채팅방 저장 API
@@ -100,7 +100,7 @@ function SearchPage() {
             }
           </div>
           
-          {/* 채팅방 생성성 */}
+          {/* 채팅방 생성 */}
           <div>
             <input type="text" value={name} onChange={(e) => setName(e.target.value)}/>
             <button onClick={createRoom}>방 만들기</button>
