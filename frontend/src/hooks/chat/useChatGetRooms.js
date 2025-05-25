@@ -17,7 +17,6 @@ export function useChatGetRooms(userData, setChatList){
       .then((res) => {
         // ChatList State에 유저가 저장한 방 목록 Set
         setChatList(res.data);
-        console.log(res.data)
       })
       .catch((err) => console.error('chatList가져오기 실패', err));
   }, [userData, setChatList]);

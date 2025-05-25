@@ -11,7 +11,7 @@ import { LogContext } from '../../../App.jsx'
 // Custom Hook import
 import { useChatGetRooms } from '../../../hooks/chat/useChatGetRooms.js'
 
-function ChatListPage({ selectedRoom, setSelectedRoom }) {
+function ChatListPage({ selectedRoom, setSelectedRoom, setMessages }) {
 
   // State 보관함 해체
   const {userData} = useContext(LogContext)
@@ -29,7 +29,7 @@ function ChatListPage({ selectedRoom, setSelectedRoom }) {
   function getChatUserList(roomId){
 
     axios.get('api/get/user/chatlist', {
-      // Context에 저장된 userId로 get 요청
+      // Context에 저장된 roomId로 get 요청
       params: { 
         roomId: roomId
       }
@@ -56,9 +56,21 @@ function ChatListPage({ selectedRoom, setSelectedRoom }) {
     });
   }
 
-  useEffect(()=>{
-    console.log(selectedRoom)
-  },[selectedRoom])
+  // 해당 채팅방에 저장된 메세지 불러오는 함수
+  function getChatList(roomId){
+     axios.get('/api/user/request/userchatlist', {
+      // Context에 저장된 roomId로 get 요청
+      params: { 
+        roomId: roomId
+      }
+    })
+    .then((res) => {
+      console.log(res.data)
+      setMessages(res.data)
+    })
+    .catch((err) => console.error('채팅 내역 불러오기 실패', err));
+  }
+
 
   return (
     <div className='listRouteSize contentStyle' style={{color:"white"}}>
@@ -99,7 +111,7 @@ function ChatListPage({ selectedRoom, setSelectedRoom }) {
           {/* 스타일 임시로 지정 */}
           <div style={{display:"flex", textAlign:"center"}}>
             {/* 선택시 방 ID를 방 구독 커스텀훅으로 전달 */}
-            <p onClick={()=>{ setSelectedRoom(item.chatRoom); }}> {item.chatRoom.name} </p>
+            <p onClick={()=>{ setSelectedRoom(item.chatRoom); getChatList(item.chatRoom.id) }}> {item.chatRoom.name} </p>
             
             {/* [삭제] 클릭시 유저 저장 채팅방 테이블의 기본키를 전송하여 요청 */}
             <p onClick={()=>{ deleteUserRoom(item.id); }}>--[삭제]</p>

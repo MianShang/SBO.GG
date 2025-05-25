@@ -1,8 +1,15 @@
 package com.example.backend.Entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
+
+import java.util.Date;
 
 @Entity
+@Getter
+@Setter
 public class ChatList {
     @Id
     @GeneratedValue
@@ -10,14 +17,14 @@ public class ChatList {
 
     private String chatContent;         // 채팅 내용
 
+    @CreationTimestamp
+    private Date chatDate;              // 채팅 시간 (자동 입력)
+
     @ManyToOne
     @JoinColumn(name="chat_room_id")
     private ChatRoom chatRoom;          // 해당 채팅방
 
     @ManyToOne
     @JoinColumn(name="user_id")
-    private User user;                  // 메세지 저송자 유저
-
-
-
+    private User user;                  // 메세지 전송자
 }

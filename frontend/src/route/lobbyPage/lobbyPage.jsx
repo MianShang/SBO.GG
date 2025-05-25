@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from 'react'
+import { useRef,useState, useEffect, useContext } from 'react'
 import { Routes, Route, Link, useNavigate  } from 'react-router-dom'
 import { Client } from '@stomp/stompjs';
 import axios from 'axios';
@@ -19,6 +19,8 @@ function LobbyPage() {
   // navigate 객체 생성
   const navigate = useNavigate();
 
+  
+
   // 사이드바 프로필 이미지 클릭시 중앙 div는 사라지게 - 기본값 true(중앙 div 표시)
   const [showMidBar, setShowMidBar] = useState(true);
 
@@ -37,7 +39,8 @@ function LobbyPage() {
   useChatSubscriber(selectedRoom, setMessages, setClient);
 
   // 전송 훅 생성 함수를 담음
-  const sendMessage = useChatSender(client, selectedRoom, userData.userName, input, setInput);
+  const sendMessage = useChatSender(client, selectedRoom, userData, input, setInput);
+
 
 
   // 로그인 여부 검사 Effect
@@ -60,6 +63,15 @@ function LobbyPage() {
       console.error(err);
     });
   }
+
+  const messageContainerRef = useRef(null);
+
+  useEffect(() => {
+    const container = messageContainerRef.current;
+    if (container) {
+      container.scrollTop = container.scrollHeight;
+    }
+  }, [messages]);
  
 
   return (
@@ -121,7 +133,8 @@ function LobbyPage() {
           <div className='listSize'>
             { toggle ? 
                 <ChatListPage 
-                  selectedRoom = {selectedRoom}
+                  setMessages     = { setMessages }
+                  selectedRoom    = { selectedRoom }
                   setSelectedRoom = { setSelectedRoom } /> 
               : <FriendListPage /> }
           </div>
@@ -133,10 +146,11 @@ function LobbyPage() {
 
         {/* 상단 채팅창 */}
         <div className='contentStyle chatSize' style={{textAlign:"left"}}>
-          채팅창임
-
+   
           {/* 메시지 목록 출력 */}
-          <div style={{color:"white"}}>
+          <div  ref={messageContainerRef} className='scroll-container'
+          style={{color:"white", height:"calc(100% - 60px)", overflowY: "auto"}}>
+ 
             {
               messages.map((msg, i) => (
                 <div key={i}>
@@ -144,16 +158,23 @@ function LobbyPage() {
                 </div>
               ))
             }
+        
           </div>
+          <hr/>
 
-          <div className="inputLocation inputSize">
+          <div className="inputLocation inputSize" style={{overflowY: "auto"}}>
+            
             <input
               type="text"
-              value={input}
-              onChange={(e) => setInput(e.target.value)} // 입력값 업데이트
-              placeholder="메시지를 입력하세요"
+              value={ input }
+              onChange  = { (e) => setInput(e.target.value) }  // 입력값 업데이트
+              onKeyDown = { (e) => {                         // 엔터키 입력시 메세지 바로 전송송
+                if (e.key === 'Enter') { sendMessage(); } 
+              }}
               className=""/>
-            <button onClick={sendMessage}>보내기</button> {/* 메시지 전송 */}
+
+            {/* 메시지 전송 버튼 */}
+            <button onClick={sendMessage}>보내기</button> 
         </div>
 
         </div>
