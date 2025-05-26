@@ -1,5 +1,12 @@
 import axios from 'axios';
 
+/* ======================================================================
+이 커스텀 훅은 유저가 채팅방으로 메세지를 전송하고 DB에 저장하는는 로직이다.
+
+- function sendMessage() : 현재 구독중인 채팅방으로 메세지를 발행하는 로직
+- axios.post('/api/user/add/userchatlist', {...}) : 서버로 데이터를 보내 저장하는 로직
+====================================================================== */ 
+
 export function useChatSender(client, selectedRoom, userData, input, setInput) {
   
   function sendMessage() {
@@ -21,9 +28,9 @@ export function useChatSender(client, selectedRoom, userData, input, setInput) {
 
       // 채팅 내역 저장 API
       axios.post('/api/user/add/userchatlist', {
-        chatRoom : selectedRoom.id,   
-        chatContent : input,
-        userId : userData.userId
+        chatRoom : selectedRoom.id,   // 해당 채팅방 ID
+        chatContent : input,          // 입력 내용
+        userId : userData.userId      // 유저 ID
       })
       .then((res) => {
         console.log('메세지 저장 성공');

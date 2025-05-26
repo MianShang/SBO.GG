@@ -4,30 +4,26 @@ import { Client } from '@stomp/stompjs';
 import axios from 'axios';
 import './searchPage.css'
 
-// 로그인 체크용 Comtext API import
+// 로그인 체크용 Context API import
 import { LogContext } from '../../App.jsx'
+
+// custom hook import
+import { useLoginCheck }      from '../../hooks/login/useLoginCheck.js';
 
 
 function SearchPage() {
-  // navigate 객체 생성
-  const navigate = useNavigate();
+
+  const [name, setName]  = useState('');
+  const [rooms, setRooms] = useState([]);
 
   // State 보관함 해체
   const {isLogIn, setIsLogIn, userData} = useContext(LogContext)
   
-  // 로그인 여부 검사 Effect
-  // 로그아웃 상태로 '/' 접근시 '/login'으로 navigate
-  useEffect(()=>{
-    if(!isLogIn) {
-      navigate('/login');
-    } 
-  },[isLogIn])
+  // 커스텀 훅 가져오기
+  useLoginCheck(isLogIn);   // 로그인 체크 훅
 
-
-  const [name, setName] = useState('');
-  const [rooms, setRooms] = useState([]);
-
-   // 처음 url에 입장할때 목록 가져오기 실행
+  
+  // 처음 url에 입장할때 목록 가져오기 실행
   useEffect(() => {
     axios.get('/api/chat/rooms')
       .then((res) => {
