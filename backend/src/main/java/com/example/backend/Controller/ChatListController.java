@@ -22,7 +22,7 @@ public class ChatListController {
 
     private final ChatListRepository chatListRepository;
     private final ChatRoomRepository chatRoomRepository;
-    private final UserRepository userRepository;
+    private final UserRepository     userRepository;
 
     // 유저의 채팅 목록을 저장하는 API
     @PostMapping("/api/user/add/userchatlist")
@@ -44,7 +44,6 @@ public class ChatListController {
         chatList.setChatContent(chatListRequestDto.getChatContent());
         chatList.setChatRoom(chatRoom.get());
         chatList.setUser(user.get());
-
 
         // DB 저장
         chatListRepository.save(chatList);

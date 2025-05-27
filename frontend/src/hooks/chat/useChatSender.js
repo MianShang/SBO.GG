@@ -23,8 +23,7 @@ export function useChatSender(client, selectedRoom, userData, input, setInput) {
         }),
       });
 
-      // 입력창 비우기기
-      setInput('');
+      
 
       // 채팅 내역 저장 API
       axios.post('/api/user/add/userchatlist', {
@@ -38,6 +37,23 @@ export function useChatSender(client, selectedRoom, userData, input, setInput) {
       .catch((err) => {
         console.error('메세지 저장 실패:', err);
       });
+
+
+      // 안읽은 메세지 처리를 위해 
+      axios.post('/api/chat/isread', {
+        chatRoom : selectedRoom.id,   // 해당 채팅방 ID
+        chatContent : input            // 입력 내용
+      })
+      .then((res) => {
+        console.log('메세지 저장 성공2');
+      })
+      .catch((err) => {
+        console.error('메세지 저장 실패2', err);
+      });
+
+      // 입력창 비우기기
+      setInput('');
+
     }
     
   }

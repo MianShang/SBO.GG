@@ -1,10 +1,16 @@
 import axios from 'axios';
 
-export function useChatListGet(setMessages){
+/* ======================================================================
+이 커스텀 훅은 채팅방 입장이 저장된 메세지를 불러오는 로직이다.
+
+- getChatList(): 채팅방에 저장된 메세지 목록을 불러오는 함수
+====================================================================== */ 
+
+export function useChatListGet(){
     
   // 해당 채팅방에 저장된 메세지 불러오는 함수
-  function getChatList(roomId){
-     axios.get('/api/user/request/userchatlist', {
+  function getChatList(roomId, setMessages){
+    axios.get('/api/user/request/userchatlist', {
       // Context에 저장된 roomId로 get 요청
       params: { 
         roomId: roomId

@@ -49,10 +49,35 @@ function LobbyPage() {
 
   useEffect(() => {
     const container = messageContainerRef.current;
+
     if (container) {
       container.scrollTop = container.scrollHeight;
     }
   }, [messages]);
+  
+
+  function findUser(){
+    axios.get('/api/test5')
+    .then((res) => {
+    })
+    .catch((err) => console.error('실패', err));
+  }
+
+  function checkRead(){
+    axios.get('/api/test6')
+    .then((res) => {
+    })
+    .catch((err) => console.error('실패', err));
+  }
+
+  function readChange(){
+    axios.post('/api/test7')
+    .then((res) => {
+
+    })
+    .catch((err)=> console.error('실패', err))
+  }
+ 
  
 
   return (
@@ -70,7 +95,14 @@ function LobbyPage() {
          {/* showMidBar false일시 정보 수정창 표시 */}
          { showMidBar ? 
           <div>
+
             <p onClick={()=>{ logoutFunc(setIsLogIn) }}> 로그아웃 </p>
+
+            <p onClick={()=>{ findUser() }}>test</p>
+            <p onClick={()=>{ checkRead() }}>안읽은거</p>
+            <p onClick={()=>{ readChange() }}>읽음 체크</p>
+
+
           </div> 
           : <>
             {/* 정보 수정 */}
