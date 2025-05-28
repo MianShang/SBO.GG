@@ -1,5 +1,6 @@
 import { useState, useEffect, useContext } from 'react'
 import axios from 'axios';
+import { Client } from '@stomp/stompjs';
 import './list.css'
 
 // 전역 유저 State 데이터 가져오기용 Comtext API import
@@ -55,7 +56,7 @@ function ChatListPage({ selectedRoom, setSelectedRoom, setMessages }) {
     .catch((err) => console.error('실패 ㅅㄱ', err));
   }
 
-  // 채팅방의 안읽은 메세지 읽음 처리리
+  // 채팅방의 안읽은 메세지 읽음 처리
   function setRead(chatRoom){
 
     if(!chatRoom){ return; }
@@ -79,15 +80,48 @@ function ChatListPage({ selectedRoom, setSelectedRoom, setMessages }) {
       testGet(item.chatRoom);
     });
 
-
-    const interval = setInterval(() => {
-      chatList.forEach(item => {
-        testGet(item.chatRoom);
-      });
-    }, 1000);
-
-    return () => clearInterval(interval);
   }, [chatList]);
+
+  function updateUnReadChatCount(chatRoomId){
+     setUnreadCounts(prev => ({
+    ...prev,
+    [chatRoomId]: (prev[chatRoomId] || 0) + 1
+  }));
+  }
+
+
+  // 유저가 포함된 채팅방에서 채팅 기록이 업로드가 되었을시 실행
+  useEffect(() => {
+
+    if (userData == null) return;
+
+
+    const stomp = new Client({
+      brokerURL: 'ws://localhost:8080/gs-guide-websocket',
+      reconnectDelay: 5000,
+      
+      // STOMP 연결 API
+      onConnect: () => {
+        stomp.subscribe(`/topic/chat/summary/${userData.userId}`, msg => {
+
+          const { chatRoomId, lastMessage, unreadCount } = JSON.parse(msg.body);
+
+          console.log("받은 요약 알림:", chatRoomId, lastMessage, unreadCount);
+          console.log("메시지 수신:", msg.body);
+
+          updateUnReadChatCount(chatRoomId)
+          
+        });
+      },
+    });
+    // stomp 활성화
+    stomp.activate();
+    console.log(`구독 성공: /topic/chat/summary/${userData.userId}`);
+
+    return () => {
+      stomp.deactivate();
+    };
+  }, []);
 
 
   return (
