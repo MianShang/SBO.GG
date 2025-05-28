@@ -32,11 +32,13 @@ function ChatListPage({ selectedRoom, setSelectedRoom, setMessages }) {
   const deleteUserRoom  = useChatDeleteRoom();                  // 저장한 채팅방 지우는 커스텀훅
   const getChatList     = useChatListGet();                     // 실시간으로 구독한 채팅방의 채팅 목록 가져오는 커스텀훅
 
+  const [unreadCounts, setUnreadCounts] = useState({});
 
-  const [noRead, setNoRead] = useState([]);
-
-
+  // 채팅방별 안읽은 메세지 출력
   function testGet(chatRoom){
+    if(!chatRoom){ return; }
+
+
     axios.get('/api/get/chat/no-read',{
       params: {
         userId: userData.userId,
@@ -45,11 +47,47 @@ function ChatListPage({ selectedRoom, setSelectedRoom, setMessages }) {
     })
     .then((res) => {
         // ChatList State에 유저가 저장한 방 목록 Set
-        console.log(chatRoom.name)
-        console.log('안읽은 메세지 개수 : ' + res.data)
+        //console.log(chatRoom.name)
+        //console.log('안읽은 메세지 개수 : ' + res.data)
+        setUnreadCounts(prev => ({ ...prev, [chatRoom.id]: res.data }));
+
       })
-      .catch((err) => console.error('실패 ㅅㄱ', err));
+    .catch((err) => console.error('실패 ㅅㄱ', err));
   }
+
+  // 채팅방의 안읽은 메세지 읽음 처리리
+  function setRead(chatRoom){
+
+    if(!chatRoom){ return; }
+
+    // 안읽은 메세지 처리를 위해 
+      axios.post('/api/chat/read', {
+        userId : userData.userId,      // 입력 내용
+        chatRoom : chatRoom.id     // 해당 채팅방 ID
+      })
+      .then((res) => {
+        console.log('메세지 읽기 성공');
+      })
+      .catch((err) => {
+        console.error('메세지 읽기 실패 ㅅㄱ', err);
+      });
+  }
+
+  useEffect(() => {
+  
+    chatList.forEach(item => {
+      testGet(item.chatRoom);
+    });
+
+
+    const interval = setInterval(() => {
+      chatList.forEach(item => {
+        testGet(item.chatRoom);
+      });
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [chatList]);
 
 
   return (
@@ -77,8 +115,12 @@ function ChatListPage({ selectedRoom, setSelectedRoom, setMessages }) {
             : null }
 
           {/* 하단 버튼 */}
-          <div onClick={()=>{ setChatListExtend(!chatListExtend); getChatUserList(selectedRoom.id); }}>
-              { !chatListExtend ? <p>[더보기]</p> : <p>[닫기]</p> }
+          <div onClick={()=>{ 
+            setChatListExtend(!chatListExtend);   // 확장 여부 State 반전
+            getChatUserList(selectedRoom.id);     // 해당 채팅방의 유저 목록을 가져오는 커스텀 훅훅
+            }}>
+
+            { !chatListExtend ? <p>[더보기]</p> : <p>[닫기]</p> }
           </div>
 
         </div>
@@ -87,21 +129,33 @@ function ChatListPage({ selectedRoom, setSelectedRoom, setMessages }) {
       {/* 유저가 저장한 채팅방 리스트 출력 */}
       { chatList.map((item, i) => {
         
-        testGet(item.chatRoom);
-
+        // 채팅방별 안읽은 메세지 개수 
+        const unread = unreadCounts[item.chatRoom.id] || 0;
+        
         return (
-          <div key={item.id} className={'chatListStyle'} onClick={()=>{ setSelectedRoom(item.chatRoom);  getChatList(item.chatRoom.id, setMessages); }}>
+          <div key={item.id} className={'chatListStyle'} 
+            onClick={()=>{ 
+              setSelectedRoom(item.chatRoom);               // 방 선택 커스텀 훅
+              getChatList(item.chatRoom.id, setMessages);   // 채팅방의 채팅 리스트 가져오는 커스텀 훅 
+              setRead(item.chatRoom);                       // 채팅 읽음 처리리
+
+              unreadCounts[item.chatRoom.id] = 0;           // 첫 실행시 전부 읽음처리처럼 보이기 위해 0으로
+            }}>
               
             {/* 스타일 임시로 지정 */}
-            <div style={{display:"flex", textAlign:"center"}}>
+            <div>
+                          <div style={{ display: "flex", flexDirection: "column", marginLeft: "20px" }}>
+              <div style={{ display: "flex", alignItems: "center" }}>
+                <p>{ item.chatRoom.name }</p>
+                <p onClick={() => { deleteUserRoom(item.id); }} style={{ marginLeft: "10px", cursor: "pointer" }}>--[삭제]</p>
+              </div>
 
-              <p> { item.chatRoom.name} </p>
-              
-              {/* [삭제] 클릭시 유저 저장 채팅방 테이블의 기본키를 전송하여 요청 */}
-              <p onClick={()=>{ deleteUserRoom(item.id); }}>--[삭제]</p>
-
+              {/* 아래로 내린 안읽은 메시지 개수 */}
+              <p style={{ color: "red", marginTop: "0px" }}>{ unread }</p>
             </div>
-          </div> )
+            
+            </div>
+          </div>)
         })}
     </div>
   )

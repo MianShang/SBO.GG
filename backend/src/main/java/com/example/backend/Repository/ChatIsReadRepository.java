@@ -16,7 +16,7 @@ public interface ChatIsReadRepository extends JpaRepository<ChatIsRead, Long> {
     List<ChatIsRead> findByUserAndChatRoomId(User user, ChatRoom chatRoom);
 
 
-
+    int countByUserAndChatRoomIdAndIsReadFalse(User user, ChatRoom chatRoom);
 
 }
 

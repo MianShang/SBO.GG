@@ -12,10 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -67,81 +64,52 @@ public class ChatIsReadController {
 
     // 저장한 채팅방의 안읽은 채팅이 몇개인지 출력하는 API
     @GetMapping("/api/get/chat/no-read")
-    public int getChatIsRead(@RequestParam Map<String, String> request) {
-
-        // Map에서 가져옴
+    public int getUnreadCount(@RequestParam Map<String, String> request) {
         String userId = request.get("userId");
         String chatRoomId = request.get("chatRoom");
 
-        System.out.println(userId);
-        System.out.println(chatRoomId);
-
-        // 파라미터로 들어온 유저ID로 유저 엔티티를 찾음
         Optional<User> user = userRepository.findByUserId(userId);
-
-        // 채팅방 가져오기
         Optional<ChatRoom> chatRoom = chatRoomRepository.findById(chatRoomId);
 
-        // 위의 두개에 포함되는 채팅 리스트 가져오기
+        int noReadChat = chatIsReadRepository.countByUserAndChatRoomIdAndIsReadFalse(user.get(), chatRoom.get());
+
         List<ChatIsRead> chatIsReads = chatIsReadRepository.findByUserAndChatRoomId(user.get(), chatRoom.get());
 
-        System.out.println(chatRoom.get().getName() + " 방의 안읽은거 : " + chatIsReads.size());
+        String lastChat = chatIsReads.get(chatIsReads.size() - 1 ).getContent();
 
-        return chatIsReads.size();
+        // 맵으로 담아서 보내기
+        Map<Integer, String> test = new HashMap<>();
 
+        test.put(noReadChat, lastChat);
+
+        System.out.println(test);
+
+        return noReadChat;
     }
 
+    // 채팅방의 메세지를 읽음 처리 함
+    @PostMapping("/api/chat/read")
+    public void postChatRead(@RequestBody Map<String, String> request) {
 
+        // Map에서 데이터 가져오기
+        String userId = request.get("userId");
+        String chatRoomId = request.get("chatRoom");
 
+        // 유저와 채팅방 엔티티를 찾음
+        Optional<User> user = userRepository.findByUserId(userId);
+        Optional<ChatRoom> chatRoom = chatRoomRepository.findById(chatRoomId);
 
-
-/*
-
-
-    // 유저의 안읽은 채팅 몇개인지 체킹 테스트
-    @GetMapping("api/test6")
-    public void test6(){
-        // 김용반 아이디로 테스트
-        Optional<User> user = userRepository.findById(2L);
-        // 차은우김용반강동원 방으로 테스트
-        Optional<ChatRoom> chatRoom = chatRoomRepository.findById("30d74417-e143-432b-80b0-ddcafe283650");
-
-        // 위의 두개에 포함되는 채팅 리스트 가져오기
+        // 유저와 채팅방에 해당하는 컬럼 리스트를 찾음
         List<ChatIsRead> chatIsReads = chatIsReadRepository.findByUserAndChatRoomId(user.get(), chatRoom.get());
 
-        int i = 0;
-
-        for(ChatIsRead chatIsRead : chatIsReads){
-            if(!chatIsRead.isRead()){
-                i++;
-            }
-        }
-        System.out.println("안읽은거 : " + i);
-
-    }
-
-    @PostMapping("/api/test7")
-    public void test7(){
-        // 김용반 아이디로 테스트
-        Optional<User> user = userRepository.findById(2L);
-        // 차은우김용반강동원 방으로 테스트
-        Optional<ChatRoom> chatRoom = chatRoomRepository.findById("30d74417-e143-432b-80b0-ddcafe283650");
-
-        // 위의 두개에 포함되는 채팅 리스트 가져오기
-        List<ChatIsRead> chatIsReads = chatIsReadRepository.findByUserAndChatRoomId(user.get(), chatRoom.get());
-
-        // isRead 값을 true로 설정하고 저장
         for (ChatIsRead cir : chatIsReads) {
-            cir.setRead(true); // 또는 cir.setIsRead(true);
+            cir.setRead(true);
         }
 
         // 한 번에 저장 (Batch 저장)
         chatIsReadRepository.saveAll(chatIsReads);
-
-
     }
 
 
- */
 
 }

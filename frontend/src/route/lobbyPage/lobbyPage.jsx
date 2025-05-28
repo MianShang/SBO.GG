@@ -56,28 +56,8 @@ function LobbyPage() {
   }, [messages]);
   
 
-  function findUser(){
-    axios.get('/api/test5')
-    .then((res) => {
-    })
-    .catch((err) => console.error('실패', err));
-  }
-
-  function checkRead(){
-    axios.get('/api/test6')
-    .then((res) => {
-    })
-    .catch((err) => console.error('실패', err));
-  }
-
-  function readChange(){
-    axios.post('/api/test7')
-    .then((res) => {
-
-    })
-    .catch((err)=> console.error('실패', err))
-  }
  
+  
  
 
   return (
