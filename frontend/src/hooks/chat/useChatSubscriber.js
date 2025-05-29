@@ -2,13 +2,15 @@
 import { useEffect } from 'react';
 import { Client } from '@stomp/stompjs';
 
-/* ======================================================================
-이 커스텀 훅은 유저가 채팅방을 구독하는 로직이다다
-
-- function useChatSubscriber() : 채팅방 서버 구독과 들어오는 메세지 State를 Set하는 함수수 
-====================================================================== */ 
-
-export function useChatSubscriber(selectedRoom, setMessages, setClient) {
+/**
+ * 채팅방을 구독하고, 실시간 메시지를 수신하는 커스텀 훅
+ *
+ * @param {Object} selectedRoom   - 현재 선택된 채팅방 객체
+ * @param {State} setMessages  - 메시지 상태를 설정하는 State
+ * @param {Function} setClient    - STOMP 클라이언트 인스턴스를 설정하는 함수
+ * @param {string} userData       - 현재 접속한 유저의 데이터 이 함수에선 아이디(userId)를 요구한다.
+ */
+export function useChatSubscriber(selectedRoom, setMessages, setClient, userData) {
   
   useEffect(() => {
     if (!selectedRoom) return;
@@ -16,6 +18,11 @@ export function useChatSubscriber(selectedRoom, setMessages, setClient) {
     const stomp = new Client({
       brokerURL: 'ws://localhost:8080/gs-guide-websocket',
       reconnectDelay: 5000,
+
+      connectHeaders: {
+        userId: userData.userId,
+        roomId: selectedRoom.id
+      },
       
       // STOMP 연결 API
       onConnect: () => {
@@ -34,6 +41,17 @@ export function useChatSubscriber(selectedRoom, setMessages, setClient) {
     setClient(stomp);
 
     return () => {
+      // 퇴장 시 서버에 알림 전송
+      if (stomp.connected) {
+        stomp.publish({
+          destination: '/app/disconnect',
+          body: JSON.stringify({
+            userId: userData.userId,
+            roomId: selectedRoom.id,
+          }),
+        });
+      }
+
       stomp.deactivate();
     };
   }, [selectedRoom, setMessages, setClient]);

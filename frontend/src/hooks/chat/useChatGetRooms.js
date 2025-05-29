@@ -22,6 +22,7 @@ export function useChatGetRooms(userData, setChatList){
         }
       })
       .then((res) => {
+
         // ChatList State에 유저가 저장한 방 목록 Set
         setChatList(res.data);
       })

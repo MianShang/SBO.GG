@@ -58,6 +58,10 @@ public class ChatListController {
         // RoomId에 해당하는 채팅 리스트를 찾음
         List<ChatList> chatList = chatListRepository.findByChatRoom_Id(roomId);
 
+        // null 방지
+        if (chatList == null) {
+            return new ArrayList<>();
+        }
 
         // return할 DTO로 List 타입 설정
         List<ChatListResponseDto> chatListResponseDtoList = new ArrayList<>();

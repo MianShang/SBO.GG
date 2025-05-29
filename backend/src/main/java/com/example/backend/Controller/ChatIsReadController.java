@@ -24,7 +24,7 @@ public class ChatIsReadController {
     private final UserRepository userRepository;
 
 
-    // 채팅방을 저장한 유저들에게 안읽은 채팅 개수를 표현하기 위한 API
+    // 채팅방을 저장한 유저들에게 안읽은 채팅 개수를 표현하기 위한 저장 API
     @PostMapping("/api/chat/isread")
     public void postChatIsRead(@RequestBody Map<String, String> request) {
         // Map에서 가져옴
@@ -65,29 +65,20 @@ public class ChatIsReadController {
     // 저장한 채팅방의 안읽은 채팅이 몇개인지 출력하는 API
     @GetMapping("/api/get/chat/no-read")
     public int getUnreadCount(@RequestParam Map<String, String> request) {
+
         String userId = request.get("userId");
         String chatRoomId = request.get("chatRoom");
 
         Optional<User> user = userRepository.findByUserId(userId);
         Optional<ChatRoom> chatRoom = chatRoomRepository.findById(chatRoomId);
 
-        int noReadChat = chatIsReadRepository.countByUserAndChatRoomIdAndIsReadFalse(user.get(), chatRoom.get());
+        // 유저와 방 ID로 검색하여 안읽은 채팅의 개수를 구함
+        int noReadChatCount = chatIsReadRepository.findByUserAndChatRoomId(user.get(), chatRoom.get()).size();
 
-        List<ChatIsRead> chatIsReads = chatIsReadRepository.findByUserAndChatRoomId(user.get(), chatRoom.get());
-
-        String lastChat = chatIsReads.get(chatIsReads.size() - 1 ).getContent();
-
-        // 맵으로 담아서 보내기
-        Map<Integer, String> test = new HashMap<>();
-
-        test.put(noReadChat, lastChat);
-
-        System.out.println(test);
-
-        return noReadChat;
+        return noReadChatCount;
     }
 
-    // 채팅방의 메세지를 읽음 처리 함
+    // 채팅방의 메세지를 읽음 처리 함 (DB에서 삭제)
     @PostMapping("/api/chat/read")
     public void postChatRead(@RequestBody Map<String, String> request) {
 
@@ -102,12 +93,8 @@ public class ChatIsReadController {
         // 유저와 채팅방에 해당하는 컬럼 리스트를 찾음
         List<ChatIsRead> chatIsReads = chatIsReadRepository.findByUserAndChatRoomId(user.get(), chatRoom.get());
 
-        for (ChatIsRead cir : chatIsReads) {
-            cir.setRead(true);
-        }
-
-        // 한 번에 저장 (Batch 저장)
-        chatIsReadRepository.saveAll(chatIsReads);
+        // 읽음 처리는 안읽은 채팅 리스트는 DB에서 삭제한다.
+        chatIsReadRepository.deleteAll(chatIsReads);
     }
 
 

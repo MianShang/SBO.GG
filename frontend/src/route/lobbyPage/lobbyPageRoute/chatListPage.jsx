@@ -16,7 +16,7 @@ import { useChatListGet }     from '../../../hooks/chatList/useChatListGet.js'
 function ChatListPage({ selectedRoom, setSelectedRoom, setMessages }) {
 
   // State 보관함 해체
-  const { userData } = useContext(LogContext)
+  const { userData } = useContext(LogContext);
 
   // State 선언
   const [chatListExtend, setChatListExtend] = useState(false);  // 채팅 리스트 확장 css 여부 State
@@ -35,36 +35,46 @@ function ChatListPage({ selectedRoom, setSelectedRoom, setMessages }) {
 
   const [unreadCounts, setUnreadCounts] = useState({});
 
-  // 채팅방별 안읽은 메세지 출력
+
+  // chatList State 지정시 채팅 목록들의 안읽은 메세지 개수를 Set
+  useEffect(() => {
+    chatList.forEach(item => {
+
+      // 채팅방 안읽은 메세지 개수 가져오는 함수
+      testGet(item.chatRoom);
+    });
+
+  }, [chatList]);
+
+
+  // 채팅방별 안읽은 메세지 Set
   function testGet(chatRoom){
+
     if(!chatRoom){ return; }
 
-
-    axios.get('/api/get/chat/no-read',{
+    axios.get('/api/get/chat/no-read', {
       params: {
         userId: userData.userId,
         chatRoom: chatRoom.id
       }
     })
-    .then((res) => {
-        // ChatList State에 유저가 저장한 방 목록 Set
-        //console.log(chatRoom.name)
-        //console.log('안읽은 메세지 개수 : ' + res.data)
-        setUnreadCounts(prev => ({ ...prev, [chatRoom.id]: res.data }));
-
-      })
-    .catch((err) => console.error('실패 ㅅㄱ', err));
+    // 해당 API에서 반환되는 데이터는 채팅방별 안읽은 메세지의 개수이다
+    .then((res) => {      
+      // 채팅방 안읽은 메세지 개수 State Set 
+      setUnreadCounts(prev => ({ ...prev, [chatRoom.id]: res.data }));
+    })
+    .catch((err) => console.error('채팅방 안읽은 메세지 목록 가져오기 실패', err));
   }
 
-  // 채팅방의 안읽은 메세지 읽음 처리
+  // 채팅방 입장시 안읽은 메세지 읽음 처리
   function setRead(chatRoom){
 
     if(!chatRoom){ return; }
 
     // 안읽은 메세지 처리를 위해 
       axios.post('/api/chat/read', {
-        userId : userData.userId,      // 입력 내용
-        chatRoom : chatRoom.id     // 해당 채팅방 ID
+        userId : userData.userId,   // 입력 내용
+        chatRoom : chatRoom.id      // 해당 채팅방 ID
       })
       .then((res) => {
         console.log('메세지 읽기 성공');
@@ -74,27 +84,11 @@ function ChatListPage({ selectedRoom, setSelectedRoom, setMessages }) {
       });
   }
 
-  useEffect(() => {
+
   
-    chatList.forEach(item => {
-      testGet(item.chatRoom);
-    });
-
-  }, [chatList]);
-
-  function updateUnReadChatCount(chatRoomId){
-     setUnreadCounts(prev => ({
-    ...prev,
-    [chatRoomId]: (prev[chatRoomId] || 0) + 1
-  }));
-  }
-
-
   // 유저가 포함된 채팅방에서 채팅 기록이 업로드가 되었을시 실행
   useEffect(() => {
-
-    if (userData == null) return;
-
+    if (!userData || !userData.userId) return;
 
     const stomp = new Client({
       brokerURL: 'ws://localhost:8080/gs-guide-websocket',
@@ -102,26 +96,38 @@ function ChatListPage({ selectedRoom, setSelectedRoom, setMessages }) {
       
       // STOMP 연결 API
       onConnect: () => {
-        stomp.subscribe(`/topic/chat/summary/${userData.userId}`, msg => {
+        stomp.subscribe(`/topic/chat/summary/${ userData.userId }`, msg => {
 
-          const { chatRoomId, lastMessage, unreadCount } = JSON.parse(msg.body);
+          // 해당 구독 링크로 들어온 데이터에서 채팅방 아이디, 메세지 내용 분리
+          const { chatRoomId, lastMessage } = JSON.parse(msg.body);
+   
+          // 현 채팅방을 구독하고있을시 카운트를 증가시키지 않는다다
+          if(selectedRoom?.id != chatRoomId ){
 
-          console.log("받은 요약 알림:", chatRoomId, lastMessage, unreadCount);
-          console.log("메시지 수신:", msg.body);
+            console.log(lastMessage)
 
-          updateUnReadChatCount(chatRoomId)
-          
+            updateUnReadChatCount(chatRoomId);
+          }
         });
       },
     });
+    
     // stomp 활성화
     stomp.activate();
-    console.log(`구독 성공: /topic/chat/summary/${userData.userId}`);
 
     return () => {
       stomp.deactivate();
     };
-  }, []);
+  }, [userData, selectedRoom]);
+
+  // 카운트 신호
+  function updateUnReadChatCount(chatRoomId){
+
+    // 안읽음 메세지 State Set
+    setUnreadCounts(prev => ({
+      ...prev, [chatRoomId] : (prev[chatRoomId] || 0) + 1 
+    }));
+  }
 
 
   return (
@@ -129,7 +135,7 @@ function ChatListPage({ selectedRoom, setSelectedRoom, setMessages }) {
 
       {/* 실시간 참여중인 채팅방 상단 표시 */}
       { selectedRoom ?
-        <div style={{border:"1px solid white", borderRadius:"7px", width:"100%", marginBottom:"30px",backgroundColor:"gray"}}>
+        <div style={{ border:"1px solid white", borderRadius:"7px", width:"100%", marginBottom:"30px",backgroundColor:"gray" }}>
           
           {/* 실시간 참여중인 채팅방 이름 표시 */}
           <p>{ selectedRoom ? selectedRoom.name : null }</p>
@@ -152,7 +158,7 @@ function ChatListPage({ selectedRoom, setSelectedRoom, setMessages }) {
           <div onClick={()=>{ 
             setChatListExtend(!chatListExtend);   // 확장 여부 State 반전
             getChatUserList(selectedRoom.id);     // 해당 채팅방의 유저 목록을 가져오는 커스텀 훅훅
-            }}>
+          }}>
 
             { !chatListExtend ? <p>[더보기]</p> : <p>[닫기]</p> }
           </div>
@@ -171,18 +177,18 @@ function ChatListPage({ selectedRoom, setSelectedRoom, setMessages }) {
             onClick={()=>{ 
               setSelectedRoom(item.chatRoom);               // 방 선택 커스텀 훅
               getChatList(item.chatRoom.id, setMessages);   // 채팅방의 채팅 리스트 가져오는 커스텀 훅 
-              setRead(item.chatRoom);                       // 채팅 읽음 처리리
+              setRead(item.chatRoom);                       // 채팅 읽음 처리
 
               unreadCounts[item.chatRoom.id] = 0;           // 첫 실행시 전부 읽음처리처럼 보이기 위해 0으로
             }}>
               
             {/* 스타일 임시로 지정 */}
             <div>
-                          <div style={{ display: "flex", flexDirection: "column", marginLeft: "20px" }}>
-              <div style={{ display: "flex", alignItems: "center" }}>
-                <p>{ item.chatRoom.name }</p>
-                <p onClick={() => { deleteUserRoom(item.id); }} style={{ marginLeft: "10px", cursor: "pointer" }}>--[삭제]</p>
-              </div>
+              <div style={{ display: "flex", flexDirection: "column", marginLeft: "20px" }}>
+                <div style={{ display: "flex", alignItems: "center" }}>
+                  <p>{ item.chatRoom.name }</p>
+                  <p onClick={() => { deleteUserRoom(item.id); }} style={{ marginLeft: "10px", cursor: "pointer" }}>--[삭제]</p>
+                </div>
 
               {/* 아래로 내린 안읽은 메시지 개수 */}
               <p style={{ color: "red", marginTop: "0px" }}>{ unread }</p>

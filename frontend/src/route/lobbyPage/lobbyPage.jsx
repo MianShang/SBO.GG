@@ -37,7 +37,7 @@ function LobbyPage() {
   // 커스텀 훅 가져오기
   // --UseEffect
   useLoginCheck(isLogIn);                                     // 로그인 체크 훅
-  useChatSubscriber(selectedRoom, setMessages, setClient);    // 채팅방 구독 훅
+  useChatSubscriber(selectedRoom, setMessages, setClient, userData);    // 채팅방 구독 훅
  
   // -- Function
   const logoutFunc  = useLogout();                                                      // 로그아웃 훅
@@ -78,9 +78,6 @@ function LobbyPage() {
 
             <p onClick={()=>{ logoutFunc(setIsLogIn) }}> 로그아웃 </p>
 
-            <p onClick={()=>{ findUser() }}>test</p>
-            <p onClick={()=>{ checkRead() }}>안읽은거</p>
-            <p onClick={()=>{ readChange() }}>읽음 체크</p>
 
 
           </div> 
