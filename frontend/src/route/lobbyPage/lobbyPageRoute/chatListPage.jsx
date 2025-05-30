@@ -190,45 +190,48 @@ function ChatListPage({ selectedRoom, setSelectedRoom, setMessages }) {
       : null}
 
       
-     
-      {/* 유저가 저장한 채팅방 리스트 출력 */}
-      { chatList.map((item, i) => {
-        
-        // 채팅방별 안읽은 메세지 개수 
-        const unread = unreadCounts[item.chatRoom.id] || 0;
-        
-        return (
-          <div key={item.id} className="chatCard"
-          onClick={() => { 
-            setChatListExtend(false);
-            setSelectedRoom(item.chatRoom);
-            getChatList(item.chatRoom.id, setMessages);
-            setRead(item.chatRoom);
-            unreadCounts[item.chatRoom.id] = 0;
-          }}>
+     <div className="chatListScrollWrapper chatListScroll">
 
-            <div className="chatCardHeader">
-              {/* 게임 아이콘 */}
-              <img src={`${setGameIcon(item.chatRoom.gameName)}`} alt="방 아이콘" className="chatCardImage" />
+        {/* 유저가 저장한 채팅방 리스트 출력 */}
+        { chatList.map((item, i) => {
+          
+          // 채팅방별 안읽은 메세지 개수 
+          const unread = unreadCounts[item.chatRoom.id] || 0;
+          
+          return (
+            <div key={item.id} className="chatCard"
 
-              {/* 채팅방 이름 */}
-              <span className="chatCardTitle">{ item.chatRoom.name } </span>
-              {/* 채팅방 삭제 */}
-              <span  className="chatCardDelete"
-                onClick={(e) => { e.stopPropagation(); deleteUserRoom(item.id); }}>
-                🗑
-              </span>
-            </div>
+            onClick={() => { 
+              setChatListExtend(false);
+              setSelectedRoom(item.chatRoom);
+              getChatList(item.chatRoom.id, setMessages);
+              setRead(item.chatRoom);
+              unreadCounts[item.chatRoom.id] = 0;
+            }}>
 
-          {/* 안읽은 메세지 개수를 출력한다.*/}
-          { unread > 0 ?
-            <div className="chatCardFooter">
-              <span className="chatCardBadge">{ unread }</span>
-              <span className="chatCardLastMessage">안읽은 메세지가 있습니다</span>
-            </div>
-            : null }
-        </div>)
-      })}
+              <div className="chatCardHeader">
+                {/* 게임 아이콘 */}
+                <img src={`${setGameIcon(item.chatRoom.gameName)}`} alt="방 아이콘" className="chatCardImage" />
+
+                {/* 채팅방 이름 */}
+                <span className="chatCardTitle">{ item.chatRoom.name } </span>
+                {/* 채팅방 삭제 */}
+                <span  className="chatCardDelete"
+                  onClick={(e) => { e.stopPropagation(); deleteUserRoom(item.id); }}>
+                  🗑
+                </span>
+              </div>
+
+            {/* 안읽은 메세지 개수를 출력한다.*/}
+            { unread > 0 ?
+              <div className="chatCardFooter">
+                <span className="chatCardBadge">{ unread }</span>
+                <span className="chatCardLastMessage">안읽은 메세지가 있습니다</span>
+              </div>
+              : null }
+          </div>)
+        })}
+      </div>
     </div>
   )
 }
