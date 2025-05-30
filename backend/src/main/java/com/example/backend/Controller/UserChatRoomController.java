@@ -63,6 +63,7 @@ public class UserChatRoomController {
         // 유저 ID가 저장한 채팅방 목록 select
         List<UserChatRoom> userChatRooms = userChatRoomRepository.findByUser_UserId(userId);
 
+
         return userChatRooms;
     }
 

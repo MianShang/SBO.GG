@@ -173,29 +173,35 @@ function ChatListPage({ selectedRoom, setSelectedRoom, setMessages }) {
         const unread = unreadCounts[item.chatRoom.id] || 0;
         
         return (
-          <div key={item.id} className={'chatListStyle'} 
-            onClick={()=>{ 
-              setSelectedRoom(item.chatRoom);               // 방 선택 커스텀 훅
-              getChatList(item.chatRoom.id, setMessages);   // 채팅방의 채팅 리스트 가져오는 커스텀 훅 
-              setRead(item.chatRoom);                       // 채팅 읽음 처리
+          <div key={item.id} className="chatCard"
+          onClick={() => { 
+            setSelectedRoom(item.chatRoom);
+            getChatList(item.chatRoom.id, setMessages);
+            setRead(item.chatRoom);
+            unreadCounts[item.chatRoom.id] = 0;
+          }}>
 
-              unreadCounts[item.chatRoom.id] = 0;           // 첫 실행시 전부 읽음처리처럼 보이기 위해 0으로
-            }}>
+            <div className="chatCardHeader">
+
+              <img src="https://placehold.co/45" alt="방 아이콘" className="chatCardImage" />
+
+              <span className="chatCardTitle">{ item.chatRoom.name }</span>
+              <span 
+                className="chatCardDelete"
+                onClick={(e) => { e.stopPropagation(); deleteUserRoom(item.id); }}>
+                🗑
+              </span>
+            </div>
+
+          { unread > 0 && (
+            <div className="chatCardFooter">
+               <span className="chatCardBadge">{ unread }</span>
+              <span className="chatCardLastMessage"> 마지막 메세지 추가</span>
               
-            {/* 스타일 임시로 지정 */}
-            <div>
-              <div style={{ display: "flex", flexDirection: "column", marginLeft: "20px" }}>
-                <div style={{ display: "flex", alignItems: "center" }}>
-                  <p>{ item.chatRoom.name }</p>
-                  <p onClick={() => { deleteUserRoom(item.id); }} style={{ marginLeft: "10px", cursor: "pointer" }}>--[삭제]</p>
-                </div>
-
-              {/* 아래로 내린 안읽은 메시지 개수 */}
-              <p style={{ color: "red", marginTop: "0px" }}>{ unread }</p>
+              
             </div>
-            
-            </div>
-          </div>)
+          )}
+        </div>)
         })}
     </div>
   )

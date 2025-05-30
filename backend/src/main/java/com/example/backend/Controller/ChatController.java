@@ -7,6 +7,7 @@ import com.example.backend.Entity.UserChatRoom;
 import com.example.backend.Repository.ChatListRepository;
 import com.example.backend.Repository.ChatRoomRepository;
 import com.example.backend.Repository.UserChatRoomRepository;
+import com.example.backend.Websocket.RealTimeUserManagement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
@@ -83,11 +84,14 @@ public class ChatController {
 
         if (userId != null && roomId != null) {
 
-            // HashMap에 방 Id와 유저 ID 추가
-            activeUsersByRoom.putIfAbsent(roomId, ConcurrentHashMap.newKeySet());
-            activeUsersByRoom.get(roomId).add(userId);
+            // 전역 유저 관리 Map 사용
+            RealTimeUserManagement.activeUsersByRoom.putIfAbsent(roomId, ConcurrentHashMap.newKeySet());
+            RealTimeUserManagement.activeUsersByRoom.get(roomId).add(userId);
 
             System.out.println("🟢 유저 입장: " + userId + "  방 ID : " + roomId);
+
+            System.out.println("실시간 해당 채팅방 유저 목록");
+            System.out.println(RealTimeUserManagement.activeUsersByRoom.getOrDefault(roomId, Set.of()));
         }
     }
 
@@ -101,9 +105,12 @@ public class ChatController {
         if (userId != null && roomId != null) {
 
             // HashMap에서 삭제
-            activeUsersByRoom.getOrDefault(roomId, new HashSet<>()).remove(userId);
+            RealTimeUserManagement.activeUsersByRoom.getOrDefault(roomId, new HashSet<>()).remove(userId);
 
             System.out.println("🔴 유저 퇴장: " + userId + "  방 ID : " + roomId);
+
+            System.out.println("실시간 해당 채팅방 유저 목록");
+            System.out.println(RealTimeUserManagement.activeUsersByRoom.getOrDefault(roomId, Set.of()));
         }
     }
 

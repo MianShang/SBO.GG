@@ -8,6 +8,7 @@ import com.example.backend.Repository.ChatIsReadRepository;
 import com.example.backend.Repository.ChatRoomRepository;
 import com.example.backend.Repository.UserChatRoomRepository;
 import com.example.backend.Repository.UserRepository;
+import com.example.backend.Websocket.RealTimeUserManagement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -34,33 +35,31 @@ public class ChatIsReadController {
         // 채팅방을 저장한 유저들을 찾기 위해 특정 방 Id의 컬럼을 가져온다
         List<UserChatRoom> userChatRooms = userChatRoomRepository.findByChatRoom_Id(chatRoomId);
 
-        // 채팅방을 저장한 유저들을 저장하기 위한 List
-        List<User> users =  new ArrayList<>();
-
-        // User 엔티티만 추출
-        for (UserChatRoom ucr : userChatRooms) {
-            // 유저만 가져오기
-            User user = ucr.getUser();
-
-            // 리스트에 Add
-            users.add(user);
-        }
-
         // 어떤 채팅방에 쌓인 알림인지 알기 위한 Find
         Optional<ChatRoom> chatRoom = chatRoomRepository.findById(chatRoomId);
 
-        // 리스트에있는 유저 만큼 반복하여 저장
-        for(User user : users){
-            ChatIsRead chatIsRead = new ChatIsRead();
+        // 접속 중인 유저 목록 가져오기 (없으면 빈 Set)
+        // 채팅방 ID를 기준으로 Map에서 유저 목록을 가져온다
+        Set<String> activeUsers = RealTimeUserManagement.activeUsersByRoom.getOrDefault(chatRoomId, Set.of());
 
+        for (UserChatRoom ucr : userChatRooms) {
+            User user = ucr.getUser();
+            String userId = user.getUserId();
+
+            // 현재 채팅방에 접속 중인 유저는 저장 제외
+            if (activeUsers.contains(userId)) {
+                continue;
+            }
+
+            ChatIsRead chatIsRead = new ChatIsRead();
             chatIsRead.setChatRoomId(chatRoom.get());
             chatIsRead.setUser(user);
             chatIsRead.setContent(chatContent);
 
-            // DB 저장
             chatIsReadRepository.save(chatIsRead);
         }
     }
+
 
     // 저장한 채팅방의 안읽은 채팅이 몇개인지 출력하는 API
     @GetMapping("/api/get/chat/no-read")
@@ -77,6 +76,7 @@ public class ChatIsReadController {
 
         return noReadChatCount;
     }
+
 
     // 채팅방의 메세지를 읽음 처리 함 (DB에서 삭제)
     @PostMapping("/api/chat/read")
