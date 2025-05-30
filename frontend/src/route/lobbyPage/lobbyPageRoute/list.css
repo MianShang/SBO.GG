@@ -69,7 +69,8 @@
   color: #212121;
   border-radius: 12px;
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.08);
-  padding: 16px 20px;
+
+  padding: 7px;
   margin-bottom: 16px;
   transition: all 0.2s ease;
   cursor: pointer;
@@ -92,7 +93,9 @@
 }
 
 .chatCardImage{
-    border-radius: 50%;
+
+    width: 45px;
+    height: 45px;
 }
 
 .chatCardTitle {
@@ -124,17 +127,18 @@
 
 /* 마지막 메시지 텍스트 */
 .chatCardLastMessage {
-margin-left: 10px;
-  font-size: 0.8rem;
-  color: #555;
-  max-width: 180px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+    margin-left: 10px;
+    font-size: 0.8rem;
+    color: #555;
+    max-width: 180px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 /* 안읽은 메시지 뱃지 - 좌측 하단으로 이동 */
 .chatCardBadge {
+  margin-left: 5px;
   background-color: #d32f2f;
   color: white;
   font-size: 0.75rem;
@@ -144,3 +148,86 @@ margin-left: 10px;
   box-shadow: 0 2px 6px rgba(0,0,0,0.2);
 }
 
+
+.selectCardStyle{
+   background: #ffffff;
+    color: #212121;
+    border-radius: 12px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.08);
+
+    padding: 7px;
+    margin-bottom: 16px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.selectCardHeaderStyle{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.selectCardUserListStyle{
+  height: 200px;
+  overflow-y: auto;
+
+  color: white;
+  border-radius: 7px;
+  background-color: #111;
+
+  
+}
+.UserListContentStyle{
+  padding-left: 15px;
+  padding-right: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+   /* 디스코드 스타일 스크롤바 */
+  scrollbar-width: thin;             /* Firefox */
+  scrollbar-color: #444 #111;        /* Firefox */
+}
+
+
+.selectCardUserListStyle::-webkit-scrollbar {
+  width: 10px;
+}
+
+.selectCardUserListStyle::-webkit-scrollbar-track {
+  background: #111;
+  border-radius: 10px;
+}
+
+.selectCardUserListStyle::-webkit-scrollbar-thumb {
+  background-color: #444;
+  border-radius: 10px;
+  border: 1px solid #111;
+}
+
+
+
+.MoreButtonStyle {
+  width: 27px;
+  height: 27px;
+  background-color: #e0e0e0;
+  border-radius: 50%;
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
+  
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  transition: background-color 0.2s;
+}
+
+.MoreButtonStyle:hover {
+  color: white;
+  background-color: #272727;
+}

@@ -36,19 +36,19 @@ function ChatListPage({ selectedRoom, setSelectedRoom, setMessages }) {
   const [unreadCounts, setUnreadCounts] = useState({});
 
 
-  // chatList State 지정시 채팅 목록들의 안읽은 메세지 개수를 Set
+  // chatList State가 지정될시 서버로부터 채팅방별 안읽은 메세지 개수를 가져온다
   useEffect(() => {
     chatList.forEach(item => {
 
       // 채팅방 안읽은 메세지 개수 가져오는 함수
-      testGet(item.chatRoom);
+      countUnReadChat(item.chatRoom);
     });
 
   }, [chatList]);
 
 
   // 채팅방별 안읽은 메세지 Set
-  function testGet(chatRoom){
+  function countUnReadChat(chatRoom){
 
     if(!chatRoom){ return; }
 
@@ -65,6 +65,7 @@ function ChatListPage({ selectedRoom, setSelectedRoom, setMessages }) {
     })
     .catch((err) => console.error('채팅방 안읽은 메세지 목록 가져오기 실패', err));
   }
+
 
   // 채팅방 입장시 안읽은 메세지 읽음 처리
   function setRead(chatRoom){
@@ -98,15 +99,17 @@ function ChatListPage({ selectedRoom, setSelectedRoom, setMessages }) {
       onConnect: () => {
         stomp.subscribe(`/topic/chat/summary/${ userData.userId }`, msg => {
 
-          // 해당 구독 링크로 들어온 데이터에서 채팅방 아이디, 메세지 내용 분리
+          // 해당 구독 링크로 들어온 데이터는 chatRoomId (채팅방 ID)와 lastMessage(마지막 채팅) 이다.
           const { chatRoomId, lastMessage } = JSON.parse(msg.body);
    
           // 현 채팅방을 구독하고있을시 카운트를 증가시키지 않는다다
-          if(selectedRoom?.id != chatRoomId ){
+          if(selectedRoom?.id != chatRoomId) {
 
-            console.log(lastMessage)
-
-            updateUnReadChatCount(chatRoomId);
+            // 안읽음 메세지 State Set
+            setUnreadCounts(prev => ({
+              ...prev, [chatRoomId] : (prev[chatRoomId] || 0) + 1 
+            }));
+            //updateUnReadChatCount(chatRoomId);
           }
         });
       },
@@ -120,51 +123,73 @@ function ChatListPage({ selectedRoom, setSelectedRoom, setMessages }) {
     };
   }, [userData, selectedRoom]);
 
-  // 카운트 신호
-  function updateUnReadChatCount(chatRoomId){
 
-    // 안읽음 메세지 State Set
-    setUnreadCounts(prev => ({
-      ...prev, [chatRoomId] : (prev[chatRoomId] || 0) + 1 
-    }));
+  // 채팅방 속성 중 게임 이름에 따른 아이콘 세팅 함수
+  function setGameIcon(gameName){
+    switch(gameName)
+    {
+      case "overwatch" :
+        return "/gameIcons/overwatch_Icon.png";
+
+      case "lol" :
+        return "/gameIcons/lol_Icon.png";
+
+      case "valorant" :
+        return "/gameIcons/valorant_Icon.png";
+
+      case "maplestory" :
+        return "/gameIcons/maplestory_Icon.png";
+
+      default:
+        return "https://placehold.co/45";
+    }
   }
 
 
   return (
-    <div className='listRouteSize contentStyle' style={{ color:"white" }}>
+    <div className='listRouteSize contentStyle'>
 
       {/* 실시간 참여중인 채팅방 상단 표시 */}
       { selectedRoom ?
-        <div style={{ border:"1px solid white", borderRadius:"7px", width:"100%", marginBottom:"30px",backgroundColor:"gray" }}>
-          
-          {/* 실시간 참여중인 채팅방 이름 표시 */}
-          <p>{ selectedRoom ? selectedRoom.name : null }</p>
-          
+
+        <div className='selectCardStyle'>
+
+          <div className='selectCardHeaderStyle'>
+
+            <img src={`${setGameIcon(selectedRoom.gameName)}`} alt="방 아이콘" className="chatCardImage" />
+            {/* 실시간 참여중인 채팅방 이름 표시 */}
+            <p>{ selectedRoom ? selectedRoom.name : null }</p>
+            <p></p>
+          </div>  
+         
           {/* 더보기 클릭시 채팅방 구독한 유저 리스트 표시 */}
           { chatListExtend  ?
-            <div style={{border:"1px solid white", height:"200px", overflowY: "auto" }}>
+            <div className='selectCardUserListStyle'>
           
               {/* 유저가 구독한 채팅방 리스트 출력 */}  
               { chatUserList.map((item, i) => (
 
-                <div key = { item.userId }>
-                  <p>{ item.userId } - { item.userName }</p>
+                <div key = { item.userId } className='UserListContentStyle'>
+                  <p>{ item.userId }</p>
+
+                  <div className="MoreButtonStyle">…</div>
+                  
                 </div>
               )) }
             </div> 
-            : null }
+          : null }
 
-          {/* 하단 버튼 */}
-          <div onClick={()=>{ 
-            setChatListExtend(!chatListExtend);   // 확장 여부 State 반전
-            getChatUserList(selectedRoom.id);     // 해당 채팅방의 유저 목록을 가져오는 커스텀 훅훅
-          }}>
-
-            { !chatListExtend ? <p>[더보기]</p> : <p>[닫기]</p> }
+            {/* 하단 버튼 */}
+            <div onClick={()=>{ 
+              setChatListExtend(!chatListExtend);   // 확장 여부 State 반전
+              getChatUserList(selectedRoom.id);     // 해당 채팅방의 유저 목록을 가져오는 커스텀 훅훅
+            }}>
+            { !chatListExtend ? <p>▼</p> : <p>▲</p> }
           </div>
-
         </div>
       : null}
+
+      
      
       {/* 유저가 저장한 채팅방 리스트 출력 */}
       { chatList.map((item, i) => {
@@ -175,6 +200,7 @@ function ChatListPage({ selectedRoom, setSelectedRoom, setMessages }) {
         return (
           <div key={item.id} className="chatCard"
           onClick={() => { 
+            setChatListExtend(false);
             setSelectedRoom(item.chatRoom);
             getChatList(item.chatRoom.id, setMessages);
             setRead(item.chatRoom);
@@ -182,27 +208,27 @@ function ChatListPage({ selectedRoom, setSelectedRoom, setMessages }) {
           }}>
 
             <div className="chatCardHeader">
+              {/* 게임 아이콘 */}
+              <img src={`${setGameIcon(item.chatRoom.gameName)}`} alt="방 아이콘" className="chatCardImage" />
 
-              <img src="https://placehold.co/45" alt="방 아이콘" className="chatCardImage" />
-
-              <span className="chatCardTitle">{ item.chatRoom.name }</span>
-              <span 
-                className="chatCardDelete"
+              {/* 채팅방 이름 */}
+              <span className="chatCardTitle">{ item.chatRoom.name } </span>
+              {/* 채팅방 삭제 */}
+              <span  className="chatCardDelete"
                 onClick={(e) => { e.stopPropagation(); deleteUserRoom(item.id); }}>
                 🗑
               </span>
             </div>
 
-          { unread > 0 && (
+          {/* 안읽은 메세지 개수를 출력한다.*/}
+          { unread > 0 ?
             <div className="chatCardFooter">
-               <span className="chatCardBadge">{ unread }</span>
-              <span className="chatCardLastMessage"> 마지막 메세지 추가</span>
-              
-              
+              <span className="chatCardBadge">{ unread }</span>
+              <span className="chatCardLastMessage">안읽은 메세지가 있습니다</span>
             </div>
-          )}
+            : null }
         </div>)
-        })}
+      })}
     </div>
   )
 }

@@ -7,3 +7,16 @@
 .getLine{
     border: 1px red solid;
 }
+
+/*
+ 잠시 만들어놓은 드래그 방지 속성
+body, html, #root {
+  user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+}
+
+input, textarea {
+  user-select: text;
+}
+*/
