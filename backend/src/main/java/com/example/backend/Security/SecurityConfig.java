@@ -26,6 +26,11 @@ public class SecurityConfig {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
         config.addAllowedOrigin("http://localhost:5173"); // 리액트 서버
+        config.addAllowedOrigin("http://localhost");      // Electron 앱 기본 주소 (개발용)
+
+        // 필요하다면 전체 허용도 가능 (단, 보안 위험 높음)
+        // config.addAllowedOriginPattern("*");
+
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
 
@@ -39,7 +44,8 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 // csrf off
-                .csrf(csrf -> csrf.disable())
+                .csrf(
+                        csrf -> csrf.disable())
                 .addFilterBefore(corsFilter(), UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/admin/**").hasRole("ADMIN")

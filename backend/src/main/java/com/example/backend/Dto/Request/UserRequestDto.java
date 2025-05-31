@@ -1,21 +1,13 @@
-package com.example.backend.Entity;
+package com.example.backend.Dto.Request;
 
-import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.ArrayList;
-import java.util.List;
 
-@Entity
 @Getter
 @Setter
-public class User {
-    @Id
-    @GeneratedValue
-    private long id;
+public class UserRequestDto {
 
-    @Column(unique = true)
     private String userId;      // 유저 아이디
 
     private String userPw;      // 유저 비밀번호

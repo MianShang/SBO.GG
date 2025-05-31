@@ -3,7 +3,7 @@ import { Routes, Route, Link } from 'react-router-dom'
 import axios from 'axios';
 import './list.css'
 
-function friendListPage() {
+function FriendListPage() {
 
   return (
     <div className='listRouteSize contentStyle'>
@@ -12,4 +12,4 @@ function friendListPage() {
   )
 }
 
-export default friendListPage
+export default FriendListPage
