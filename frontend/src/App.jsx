@@ -37,8 +37,8 @@ function App() {
             //console.log(res.data);
 
             // 전역으로 관리할 유저 데이터 State Set
-            const { userId, userName, userEmail } = res.data;
-            setUserData({ userId, userName, userEmail }); 
+            const { userId, userName, userEmail, userProfile } = res.data;
+            setUserData({ userId, userName, userEmail, userProfile }); 
           })
           
         navigate('/');      // 로비 페이지로
@@ -53,7 +53,7 @@ function App() {
       const interval = setInterval(() => {
         axios.get('/api/check-login', { withCredentials: true })
           .then((res) => {
-            //console.log("Check LogIn")
+            console.log("Check LogIn")
             setIsLogIn(true);
           })
           .catch(() => {

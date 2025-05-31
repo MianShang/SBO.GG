@@ -18,6 +18,7 @@ export function useChatGetUserList(setChatUserList){
             }
         })
         .then((res) => {
+            console.log(res.data)
             setChatUserList(res.data);
         })
     .catch((err) => console.error('방 아이디 보내기 실패', err));

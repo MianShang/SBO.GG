@@ -88,6 +88,7 @@ function LobbyPage() {
               <p>ID : {userData.userId}</p>
               <p>Name : {userData.userName}</p>
               <p>Email : {userData.userEmail}</p>
+              <p>profile: {userData.userProfile ? userData.userEmail : 'null임'}</p>
             </div>
 
             {/* 완료 버튼 클릭시 setShowMidBar true */}

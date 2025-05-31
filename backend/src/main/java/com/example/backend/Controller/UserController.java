@@ -1,10 +1,12 @@
 package com.example.backend.Controller;
 
 
+import com.example.backend.Dto.Request.UserRequestDto;
 import com.example.backend.Dto.UserDto;
 import com.example.backend.Entity.User;
 import com.example.backend.Repository.UserRepository;
 import com.example.backend.Security.MyUserDetailsService;
+import com.example.backend.Service.UserService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -22,25 +24,19 @@ public class UserController {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    // 회원가입
+    private final UserService userService;
+
+    // 회원가입 API
     @PostMapping("/api/user/join")
-    public ResponseEntity<String> userJoin(@RequestBody User user) {
+    public ResponseEntity<String> userJoin(@RequestBody UserRequestDto user) {
+        try {
+            // Service 레이어 분리
+            userService.saveUser(user);
+            return ResponseEntity.ok("회원가입 성공");
 
-        // 입력칸 null 방지
-        if(user.getUserId() == null
-                || user.getUserEmail()  == null
-                || user.getUserPw()     == null
-                || user.getUserName()   == null) {
-            return ResponseEntity.badRequest().build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
-
-        // 비밀번호 해싱
-        user.setUserPw(passwordEncoder.encode(user.getUserPw()));
-
-        // DB 저장
-        userRepository.save(user);
-
-        return ResponseEntity.ok("회원가입 성공");
     }
 
     // 로그인 성공시 반환

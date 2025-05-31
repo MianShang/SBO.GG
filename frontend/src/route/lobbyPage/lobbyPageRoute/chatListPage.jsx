@@ -1,16 +1,18 @@
-import { useState, useEffect, useContext } from 'react'
-import axios from 'axios';
-import { Client } from '@stomp/stompjs';
+import { useState, useContext } from 'react'
 import './list.css'
 
 // 전역 유저 State 데이터 가져오기용 Comtext API import
 import { LogContext } from '../../../App.jsx'
 
 // Custom Hook import
-import { useChatGetUserList } from '../../../hooks/chat/useChatGetUserList.js'
-import { useChatDeleteRoom }  from '../../../hooks/chat/useChatDeleteRoom.js'
-import { useChatGetRooms }    from '../../../hooks/chat/useChatGetRooms.js'
-import { useChatListGet }     from '../../../hooks/chatList/useChatListGet.js'
+import { useSetReadUnReadChat } from '../../../hooks/chatNotice/useSetReadUnReadChat.js';
+import { useUnReadChatCount }   from '../../../hooks/chatNotice/useUnReadChatCount.js';
+import { useChatGetUserList }   from '../../../hooks/chat/useChatGetUserList.js'
+import { useChatDeleteRoom }    from '../../../hooks/chat/useChatDeleteRoom.js'
+import { useNewChatNotice }     from '../../../hooks/chatNotice/useNewChatNotice.js';
+import { useChatGetRooms }      from '../../../hooks/chat/useChatGetRooms.js'
+import { useChatListGet }       from '../../../hooks/chatList/useChatListGet.js'
+
 
 
 function ChatListPage({ selectedRoom, setSelectedRoom, setMessages }) {
@@ -20,6 +22,7 @@ function ChatListPage({ selectedRoom, setSelectedRoom, setMessages }) {
 
   // State 선언
   const [chatListExtend, setChatListExtend] = useState(false);  // 채팅 리스트 확장 css 여부 State
+  const [unreadCounts, setUnreadCounts]     = useState({});     // 채팅방별 안읽은 메세지 개수 담을 State
   const [chatUserList, setChatUserList]     = useState([]);     // 채팅리스트 확장시 유저를 담을 State
   const [chatList, setChatList]             = useState([]);     // 저장한 채팅방 리스트 State 
 
@@ -27,101 +30,14 @@ function ChatListPage({ selectedRoom, setSelectedRoom, setMessages }) {
   // 커스텀훅 가져오기
   // -- UseEffect
   useChatGetRooms(userData, setChatList);                       // 로그인한 유저의 채팅방 가져오는 커스텀훅
+  useUnReadChatCount(userData, chatList, setUnreadCounts);      // 초기에 저장된 채팅방의 안읽은 메세지 개수 카운트 커스텀훅
+  useNewChatNotice(userData, selectedRoom, setUnreadCounts);    // 저장한 채팅방에 새로운 메세지 도착시 알림개수 처리하는 커스텀 훅훅 
 
   // -- Function
-  const getChatUserList = useChatGetUserList(setChatUserList);  // 선택한 채팅방의 유저 목록을 불러오는 커스텀훅
-  const deleteUserRoom  = useChatDeleteRoom();                  // 저장한 채팅방 지우는 커스텀훅
-  const getChatList     = useChatListGet();                     // 실시간으로 구독한 채팅방의 채팅 목록 가져오는 커스텀훅
-
-  const [unreadCounts, setUnreadCounts] = useState({});
-
-
-  // chatList State가 지정될시 서버로부터 채팅방별 안읽은 메세지 개수를 가져온다
-  useEffect(() => {
-    chatList.forEach(item => {
-
-      // 채팅방 안읽은 메세지 개수 가져오는 함수
-      countUnReadChat(item.chatRoom);
-    });
-
-  }, [chatList]);
-
-
-  // 채팅방별 안읽은 메세지 Set
-  function countUnReadChat(chatRoom){
-
-    if(!chatRoom){ return; }
-
-    axios.get('/api/get/chat/no-read', {
-      params: {
-        userId: userData.userId,
-        chatRoom: chatRoom.id
-      }
-    })
-    // 해당 API에서 반환되는 데이터는 채팅방별 안읽은 메세지의 개수이다
-    .then((res) => {      
-      // 채팅방 안읽은 메세지 개수 State Set 
-      setUnreadCounts(prev => ({ ...prev, [chatRoom.id]: res.data }));
-    })
-    .catch((err) => console.error('채팅방 안읽은 메세지 목록 가져오기 실패', err));
-  }
-
-
-  // 채팅방 입장시 안읽은 메세지 읽음 처리
-  function setRead(chatRoom){
-
-    if(!chatRoom){ return; }
-
-    // 안읽은 메세지 처리를 위해 
-      axios.post('/api/chat/read', {
-        userId : userData.userId,   // 입력 내용
-        chatRoom : chatRoom.id      // 해당 채팅방 ID
-      })
-      .then((res) => {
-        console.log('메세지 읽기 성공');
-      })
-      .catch((err) => {
-        console.error('메세지 읽기 실패 ㅅㄱ', err);
-      });
-  }
-
-
-  
-  // 유저가 포함된 채팅방에서 채팅 기록이 업로드가 되었을시 실행
-  useEffect(() => {
-    if (!userData || !userData.userId) return;
-
-    const stomp = new Client({
-      brokerURL: 'ws://localhost:8080/gs-guide-websocket',
-      reconnectDelay: 5000,
-      
-      // STOMP 연결 API
-      onConnect: () => {
-        stomp.subscribe(`/topic/chat/summary/${ userData.userId }`, msg => {
-
-          // 해당 구독 링크로 들어온 데이터는 chatRoomId (채팅방 ID)와 lastMessage(마지막 채팅) 이다.
-          const { chatRoomId, lastMessage } = JSON.parse(msg.body);
-   
-          // 현 채팅방을 구독하고있을시 카운트를 증가시키지 않는다다
-          if(selectedRoom?.id != chatRoomId) {
-
-            // 안읽음 메세지 State Set
-            setUnreadCounts(prev => ({
-              ...prev, [chatRoomId] : (prev[chatRoomId] || 0) + 1 
-            }));
-            //updateUnReadChatCount(chatRoomId);
-          }
-        });
-      },
-    });
-    
-    // stomp 활성화
-    stomp.activate();
-
-    return () => {
-      stomp.deactivate();
-    };
-  }, [userData, selectedRoom]);
+  const getChatUserList = useChatGetUserList(setChatUserList);  // 선택한 채팅방의 유저 목록을 불러오는 함수
+  const deleteUserRoom  = useChatDeleteRoom();                  // 저장한 채팅방 지우는 함수
+  const getChatList     = useChatListGet();                     // 실시간으로 구독한 채팅방의 채팅 목록 가져오는 함수
+  const setRead         = useSetReadUnReadChat(userData);       // 채팅방 입장시 해당 채팅방의 메세지를 읽음 처리
 
 
   // 채팅방 속성 중 게임 이름에 따른 아이콘 세팅 함수
