@@ -150,10 +150,13 @@ public class ChatController {
 
     // 채팅방 생성
     @PostMapping("/rooms")
-    public ChatRoom createRoom(@RequestParam String name) {
+    public ChatRoom createRoom(@RequestBody Map<String, String> chatRoomData) {
+        String roomName = chatRoomData.get("chatName");
+        String gameName = chatRoomData.get("gameName");
 
         // 생성자를 통해 방 id, 이름 객체 생성
-        ChatRoom room = new ChatRoom(UUID.randomUUID().toString(), name);
+        ChatRoom room = new ChatRoom(UUID.randomUUID().toString(), roomName);
+        room.setGameName(gameName);
 
         // DB 저장
         return chatRoomRepository.save(room);

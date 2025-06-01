@@ -23,8 +23,10 @@ function ChatListPage({ selectedRoom, setSelectedRoom, setMessages }) {
   const { userData } = useContext(LogContext);
 
   // State 선언
-  const [isUserHistoryOpen, setUserHistoryOpen] = useState(false);  // 모달창 열림 여부
-  const [historyUserId, setHistoryUserId]       = useState();       // 모달창에 전송할 해당 유저 ID
+  const [sendToModalGameName , setSendToModalGameName] = useState();        // 모달창에 전송할 게임명
+  const [isUserHistoryOpen, setUserHistoryOpen]        = useState(false);    // 모달창 열림 여부
+  const [historyUserId, setHistoryUserId]              = useState();       // 모달창에 전송할 해당 유저 ID
+
 
   const [chatListExtend, setChatListExtend] = useState(false);  // 채팅 리스트 확장 css 여부 State
   const [unreadCounts, setUnreadCounts]     = useState({});     // 채팅방별 안읽은 메세지 개수 담을 State
@@ -61,6 +63,9 @@ function ChatListPage({ selectedRoom, setSelectedRoom, setMessages }) {
       case "maplestory" :
         return "/gameIcons/maplestory_Icon.png";
 
+       case "lostark" :
+        return "/gameIcons/lostark_Icon.png";
+
       default:
         return "https://placehold.co/45";
     }
@@ -74,8 +79,10 @@ function ChatListPage({ selectedRoom, setSelectedRoom, setMessages }) {
       {
         isUserHistoryOpen ?  
         <UserHistoryModal 
-          setUserHistoryOpen = { setUserHistoryOpen } 
-          historyUserId = {historyUserId}
+          sendToModalGameName = { sendToModalGameName }
+          setUserHistoryOpen  = { setUserHistoryOpen } 
+          historyUserId       = { historyUserId }
+          
         /> 
         : null
       }
@@ -136,6 +143,7 @@ function ChatListPage({ selectedRoom, setSelectedRoom, setMessages }) {
             <div key={item.id} className="chatCard"
 
             onClick={() => { 
+              setSendToModalGameName(item.chatRoom.gameName);
               setChatListExtend(false);
               setSelectedRoom(item.chatRoom);
               getChatList(item.chatRoom.id, setMessages);

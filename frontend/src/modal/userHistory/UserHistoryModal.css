@@ -76,6 +76,8 @@
     align-items: center; /* ✅ 세로(상하) 중앙 정렬 */
     justify-content: space-between; /* 좌우 정렬 */
     height: 50px;
+    padding-left: 10px;
+    padding-right: 10px;
 }
 
 .modalInContent{

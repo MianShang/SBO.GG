@@ -15,6 +15,7 @@ function SearchPage() {
 
   const [name, setName]  = useState('');
   const [rooms, setRooms] = useState([]);
+  const [gameName, setGameName] = useState('');
 
   // State 보관함 해체
   const {isLogIn, setIsLogIn, userData} = useContext(LogContext)
@@ -34,8 +35,9 @@ function SearchPage() {
 
   // 채팅방 생성 API
   function createRoom() {
-    axios.post('/api/chat/rooms', null, {
-      params: { name }, // 채팅방 이름 전송
+    axios.post('/api/chat/rooms',  {
+      chatName  : name ,
+      gameName: gameName // 채팅방 이름 전송
     })
     .then((res) => {
       setName('');     
@@ -98,6 +100,14 @@ function SearchPage() {
           
           {/* 채팅방 생성 */}
           <div>
+            <select value={gameName} onChange={(e) => setGameName(e.target.value)}>
+              <option value="" disabled selected>--선택해주세요--</option>
+              <option value="overwatch">오버워치</option>
+              <option value="lol">롤</option>
+              <option value="maplestory">메이플스토리</option>
+              <option value="lostark">로스트아크</option>
+            </select>
+
             <input type="text" value={name} onChange={(e) => setName(e.target.value)}/>
             <button onClick={createRoom}>방 만들기</button>
           </div>

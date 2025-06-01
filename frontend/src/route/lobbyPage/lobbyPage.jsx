@@ -54,11 +54,69 @@ function LobbyPage() {
       container.scrollTop = container.scrollHeight;
     }
   }, [messages]);
-  
 
+
+    // 채팅방 속성 중 게임 이름에 따른 아이콘 세팅 함수
+  function setGameIcon(gameName){
+    switch(gameName)
+    {
+      case "overwatch" :
+        return "/gameIcons/overwatch_Icon.png";
+
+      case "lol" :
+        return "/gameIcons/lol_Icon.png";
+
+      case "valorant" :
+        return "/gameIcons/valorant_Icon.png";
+
+      case "maplestory" :
+        return "/gameIcons/maplestory_Icon.png";
+
+       case "lostark" :
+        return "/gameIcons/lostark_Icon.png";
+
+      default:
+        return "https://placehold.co/45";
+    }
+  }
+
+  const [gameName, setGameName] = useState('');
+  const [gameCode, setGameCode] = useState('');
+  const [gameData, setGameData] = useState([]);
+
+  useEffect(()=>{
+    if (!userData?.userId) return;
+
+    axios.get('/api/get/user/gamecode', { 
+      params: {
+        userId: userData.userId
+      }})
+      .then((res) => {
+        setGameData(res.data);
+        console.log(res.data)
+      })
+      .catch((err) => console.error('실패3', err));
+  },[userData])
+
+
+
+  function sendUserGameCode(gameName, gameCode){
+    
+    axios.post('/api/save/gamecode', {
+      userId: userData.userId,
+      gameName : gameName,
+      gameCode : gameCode
+    })
+    .then((res) => {
+      console.log('성공');
+    })
+    .catch((err) => {
+      console.error('실패:', err);
+    });
+
+  }
   
   
- 
 
   return (
     <div className='fullscreen' style={{display:"flex", padding:"10px"}}>
@@ -75,21 +133,42 @@ function LobbyPage() {
          {/* showMidBar false일시 정보 수정창 표시 */}
          { showMidBar ? 
           <div>
-
             <p onClick={()=>{ logoutFunc(setIsLogIn) }}> 로그아웃 </p>
-
-
-
           </div> 
           : <>
             {/* 정보 수정 */}
-            <div className='sideBarDetailSize'>
-              정보수정
-              <p>ID : {userData.userId}</p>
-              <p>Name : {userData.userName}</p>
-              <p>Email : {userData.userEmail}</p>
-              <p>profile: {userData.userProfile ? userData.userEmail : 'null임'}</p>
-            </div>
+              <div className='sideBarDetailSize'>
+
+                {
+                  gameData.map((item, i) =>(
+                    <div key={item.id} style={{display:"flex"}}>
+                       <img src={`${setGameIcon(item.gameName)}`} alt="방 아이콘" className="chatCardImage"/>
+                      <p>{ item.gameName }</p>
+                      <p>{ item.gameCode }</p>
+                    </div>
+                  ))
+                }
+                <p>게임 코드 입력</p>
+
+                {/* 게임 선택 드롭다운 */}
+                <select value={gameName} onChange={(e) => setGameName(e.target.value)}>
+                  <option value="" disabled>--선택해주세요--</option>
+                  <option value="overwatch">오버워치</option>
+                  <option value="lol">롤</option>
+                  <option value="maplestory">메이플스토리</option>
+                  <option value="lostark">로스트아크</option>
+                </select>
+
+                {/* 게임 코드 입력 */}
+                <input
+                  type="text"
+                  placeholder="게임 코드를 입력하세요"
+                  value={gameCode}
+                  onChange={(e) => setGameCode(e.target.value)}
+                />
+
+                <button onClick={()=>{sendUserGameCode(gameName, gameCode); }}>저장</button>
+              </div>
 
             {/* 완료 버튼 클릭시 setShowMidBar true */}
             <div className='sideBarButtonBox'>
