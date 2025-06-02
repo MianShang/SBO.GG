@@ -12,13 +12,17 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+/*
+    임시로 쥬어 전적 검색을 위한 컨트롤러이기에 서비스 레이어 분리는 추후에 한다.
 
+ */
 @RestController
 @RequiredArgsConstructor
 public class UserGameCodeController {
     private final UserGameCodeRepository userGameCodeRepository;
     private final UserRepository userRepository;
 
+    // 유저 전적 저장을 위한 API
     @PostMapping("/api/save/gamecode")
     public ResponseEntity<?> saveUserGameCode(@RequestBody GameCodeRequestDto gameCodeRequestDto){
 
@@ -65,8 +69,11 @@ public class UserGameCodeController {
         return ResponseEntity.ok("저장 성공");
     }
 
+
+    // 로그인한 유저의 게임 코드 검색을 위한 API
     @GetMapping("/api/get/user/gamecode")
     public ResponseEntity<List<UserGameCode>> getUserGameCode(@RequestParam String userId){
+
 
         Optional<User> user = userRepository.findByUserId(userId);
 
@@ -76,10 +83,14 @@ public class UserGameCodeController {
 
     }
 
+
+    // 채팅방의 유저 리스트에서 특정 유저의 게임 코드와 게임 이름으로 전적 검색위한 API
     @GetMapping("/api/get/user/gamedata")
     public ResponseEntity<?> getUserGameData(@RequestParam String userId, @RequestParam String gameName){
+        // 유저 검색
         Optional<User> user = userRepository.findByUserId(userId);
-
+        
+        // 유저 ID와 게임 이름으로 검색
         Optional<UserGameCode> userGameCode = userGameCodeRepository.findByUserAndGameName(user.get(), gameName);
 
         if (userGameCode.isEmpty()) {

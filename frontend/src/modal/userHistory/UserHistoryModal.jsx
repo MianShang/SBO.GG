@@ -2,6 +2,11 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import './UserHistoryModal.css'; // 필요한 스타일 분리
 
+/*
+  이 컴포넌트는 유저 전적 검색을 위한 컴포넌트
+  historyUserId : 검색할 유저 ID
+  sendToModalGameName : 해당 게임 이름 
+*/
 function UserHistoryModal({ setUserHistoryOpen, historyUserId, sendToModalGameName }) {
 
 const [isClosing, setIsClosing] = useState(false);
@@ -79,8 +84,7 @@ const [isClosing, setIsClosing] = useState(false);
         </div>
 
         <div className='modalInContent'>
-          전적 데이터
-          <p> { userGameCode ? userGameCode.gameCode : null}</p>
+          <p> { userGameCode ? userGameCode.gameCode : '해당 유저의 게임코드가 없음'}</p>
         </div>
 
       </div>
