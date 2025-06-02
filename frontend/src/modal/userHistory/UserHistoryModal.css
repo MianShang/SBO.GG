@@ -1,0 +1,90 @@
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0,0,0,0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+
+  animation: fadeIn 0.3s ease-out forwards;
+}
+
+.modalContent {
+  background: white;
+  padding: 10px;
+  border-radius: 12px;
+  width: 500px;
+  height: 500px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+
+  /* 등장 애니메이션 */
+  transform: scale(0.8);
+  opacity: 0;
+  animation: popIn 0.15s ease-out forwards;
+}
+
+/* 닫는 애니메이션 (축소 + 사라짐) */
+@keyframes popOut {
+  from {
+    transform: scale(1);
+    opacity: 1;
+  }
+  to {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+}
+
+.modalContent.pop-out {
+  animation: popOut 0.15s ease-in forwards;
+}
+
+/* 모달 전체 투명도 애니메이션 */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* 모달 콘텐츠 확대 등장 */
+@keyframes popIn {
+  from {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.closeButton {
+  margin-top: 20px;
+  background-color: #007bff;
+  color: white;
+  padding: 8px 14px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.modalHeader{
+    display: flex;
+    align-items: center; /* ✅ 세로(상하) 중앙 정렬 */
+    justify-content: space-between; /* 좌우 정렬 */
+    height: 50px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.modalInContent{
+    border: 1px solid;
+    border-radius: 7px;
+    background-color: black;
+    color: white;
+    height: calc(100% - 50px);
+
+}

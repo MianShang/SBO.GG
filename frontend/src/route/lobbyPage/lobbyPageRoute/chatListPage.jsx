@@ -13,6 +13,8 @@ import { useNewChatNotice }     from '../../../hooks/chatNotice/useNewChatNotice
 import { useChatGetRooms }      from '../../../hooks/chat/useChatGetRooms.js'
 import { useChatListGet }       from '../../../hooks/chatList/useChatListGet.js'
 
+// Modal import
+import UserHistoryModal  from '../../../modal/userHistory/UserHistoryModal.jsx'
 
 
 function ChatListPage({ selectedRoom, setSelectedRoom, setMessages }) {
@@ -21,6 +23,11 @@ function ChatListPage({ selectedRoom, setSelectedRoom, setMessages }) {
   const { userData } = useContext(LogContext);
 
   // State 선언
+  const [sendToModalGameName , setSendToModalGameName] = useState();        // 모달창에 전송할 게임명
+  const [isUserHistoryOpen, setUserHistoryOpen]        = useState(false);    // 모달창 열림 여부
+  const [historyUserId, setHistoryUserId]              = useState();       // 모달창에 전송할 해당 유저 ID
+
+
   const [chatListExtend, setChatListExtend] = useState(false);  // 채팅 리스트 확장 css 여부 State
   const [unreadCounts, setUnreadCounts]     = useState({});     // 채팅방별 안읽은 메세지 개수 담을 State
   const [chatUserList, setChatUserList]     = useState([]);     // 채팅리스트 확장시 유저를 담을 State
@@ -56,14 +63,29 @@ function ChatListPage({ selectedRoom, setSelectedRoom, setMessages }) {
       case "maplestory" :
         return "/gameIcons/maplestory_Icon.png";
 
+       case "lostark" :
+        return "/gameIcons/lostark_Icon.png";
+
       default:
         return "https://placehold.co/45";
     }
   }
 
 
+  
+
   return (
     <div className='listRouteSize contentStyle'>
+      {
+        isUserHistoryOpen ?  
+        <UserHistoryModal 
+          sendToModalGameName = { sendToModalGameName }
+          setUserHistoryOpen  = { setUserHistoryOpen } 
+          historyUserId       = { historyUserId }
+          
+        /> 
+        : null
+      }
 
       {/* 실시간 참여중인 채팅방 상단 표시 */}
       { selectedRoom ?
@@ -88,7 +110,10 @@ function ChatListPage({ selectedRoom, setSelectedRoom, setMessages }) {
                 <div key = { item.userId } className='UserListContentStyle'>
                   <p>{ item.userId }</p>
 
-                  <div className="MoreButtonStyle">…</div>
+                  <div className="MoreButtonStyle" onClick={() => {
+                    setHistoryUserId(item.userId);
+                    setUserHistoryOpen(true);
+                  }}>…</div>
                   
                 </div>
               )) }
@@ -118,6 +143,7 @@ function ChatListPage({ selectedRoom, setSelectedRoom, setMessages }) {
             <div key={item.id} className="chatCard"
 
             onClick={() => { 
+              setSendToModalGameName(item.chatRoom.gameName);
               setChatListExtend(false);
               setSelectedRoom(item.chatRoom);
               getChatList(item.chatRoom.id, setMessages);
