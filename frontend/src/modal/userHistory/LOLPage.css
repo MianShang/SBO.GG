@@ -63,3 +63,9 @@
     text-align: center;
     width: 100%;
 }
+
+.error-code {
+  color: #888;
+  text-align: center;
+  padding: 20px;
+}

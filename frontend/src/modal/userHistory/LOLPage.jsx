@@ -2,7 +2,13 @@ import React, { useState } from 'react';
 import './LOLPage.css';
 
 function LOLPage({ riotStats }) {
-  if (!riotStats) return null;
+  // riotStats가 없을 경우 메시지 표시 및 유효한 데이터인지 체크 (tier 또는 most가 없을 경우 예외 처리)
+  if (!riotStats || !riotStats.tier || Object.keys(riotStats.most || {}).length === 0) {
+    return (
+      <div className="lol-box">
+      </div>
+    );
+  }
 
   const { tier, rank, lp, wins, losses, level, most } = riotStats;
   const winRate = wins + losses > 0

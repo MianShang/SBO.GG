@@ -93,7 +93,7 @@ function UserHistoryModal({ setUserHistoryOpen, historyUserId, sendToModalGameNa
           } catch (err2) {
             console.error('라이엇 전적 불러오기 실패', err2);
             setDelayedShow(true); // 실패 시에도 표시 상태 전환
-            setErrorMessage("게임 정보를 ㄱㄱ");
+            setErrorMessage("게임 정보를 불러오지 못했습니다.");
           }
         }, DISPLAY_DELAY);
 
