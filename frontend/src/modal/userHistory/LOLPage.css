@@ -26,21 +26,22 @@
 }
 
 .champion-list {
-    padding: 0 20px;
-    align-items: center;
-    display: flex; 
-    flex-direction: column;   
-    gap: 12px;          
-    margin-top: 16px; 
+  padding: 0 20px;
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 16px;
 }
 
 .champ-item {
-    display: flex;
-    align-items: center;      
-    justify-content: flex-start; 
-    gap: 12px;
-    width: 240px;
+  display: flex;
+  align-items: center;
+  justify-content: center; /* 🔥 요기 수정 */
+  gap: 12px;
+  width: 240px;
 }
+
 
 .champ-img {
     width: 36px;
