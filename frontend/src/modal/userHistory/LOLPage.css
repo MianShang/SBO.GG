@@ -1,0 +1,65 @@
+.tier-box {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.tier-img {
+    width: 130px;
+    height: 130px;
+}
+
+.tier-info {
+    display: flex;
+    flex-direction: column; 
+    text-align: left;
+    color: white;
+    gap: 8px; 
+}
+
+.tier-info p {
+    margin: 0;           
+    padding: 0;
+    line-height: 1.4;    
+}
+
+.champion-list {
+    padding: 0 20px;
+    align-items: center;
+    display: flex; 
+    flex-direction: column;   
+    gap: 12px;          
+    margin-top: 16px; 
+}
+
+.champ-item {
+    display: flex;
+    align-items: center;      
+    justify-content: flex-start; 
+    gap: 12px;
+    width: 240px;
+}
+
+.champ-img {
+    width: 36px;
+    height: 36px;
+    border-radius: 6px;
+    object-fit: cover;
+    flex-shrink: 0;         
+}
+
+.champ-item p {
+    margin: 0;
+    font-size: 15px;
+    color: white;
+    white-space: nowrap;
+}
+
+.empty-text {
+    color: #888;
+    font-size: 14px;
+    text-align: center;
+    width: 100%;
+}

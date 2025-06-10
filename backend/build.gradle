@@ -18,6 +18,8 @@ repositories {
 }
 
 dependencies {
+	implementation 'com.jayway.jsonpath:json-path:2.8.0'
+	implementation 'net.minidev:json-smart:2.4.11'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
