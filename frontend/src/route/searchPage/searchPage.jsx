@@ -106,6 +106,7 @@ function SearchPage() {
               <option value="lol">롤</option>
               <option value="maplestory">메이플스토리</option>
               <option value="lostark">로스트아크</option>
+              <option value="dnf">던전앤파이터</option>
             </select>
 
             <input type="text" value={name} onChange={(e) => setName(e.target.value)}/>

@@ -75,6 +75,9 @@ function LobbyPage() {
        case "lostark" :
         return "/gameIcons/lostark_Icon.png";
 
+      case "dnf" :
+        return "/gameIcons/dnf_Icon.png";
+        
       default:
         return "https://placehold.co/45";
     }
@@ -157,6 +160,7 @@ function LobbyPage() {
                   <option value="lol">롤</option>
                   <option value="maplestory">메이플스토리</option>
                   <option value="lostark">로스트아크</option>
+                  <option value="dnf">던전앤파이터</option>
                 </select>
 
                 {/* 게임 코드 입력 */}

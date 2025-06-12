@@ -1,0 +1,27 @@
+.dnf-box {
+    padding: 20px;
+    background-color: #000000;
+    border-radius: 20px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    font-family: 'Pretendard', sans-serif;
+  }
+  
+  .basic-info p, .equipment-item p {
+    margin: 4px 0;
+    font-size: 14px;
+  }
+  
+  .equipment-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 16px;
+    margin-top: 10px;
+  }
+  
+  .equipment-item {
+    background: #f7f7fc;
+    padding: 10px;
+    border-radius: 12px;
+    border: 1px solid #e0e0e0;
+  }
+  

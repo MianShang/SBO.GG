@@ -1,92 +1,159 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import './UserHistoryModal.css'; // 필요한 스타일 분리
+import './UserHistoryModal.css';
+import LOLPage from './LOLPage';
+import DNFPage from './DNFPage'; 
 
-/*
-  이 컴포넌트는 유저 전적 검색을 위한 컴포넌트
-  historyUserId : 검색할 유저 ID
-  sendToModalGameName : 해당 게임 이름 
-*/
+const riotCache = {};
+const CACHE_DURATION = 60 * 60 * 1000; // 30분 (ms)
+const DISPLAY_DELAY = 50 * 1000;       // 1분 지연 (ms)
+
 function UserHistoryModal({ setUserHistoryOpen, historyUserId, sendToModalGameName }) {
-
-const [isClosing, setIsClosing] = useState(false);
+  const [isClosing, setIsClosing] = useState(false);
+  const [userGameCode, setUserGameCode] = useState(null);
+  const [delayedShow, setDelayedShow] = useState(true);
+  const [errorMessage, setErrorMessage] = useState(null);
 
   const handleClose = () => {
-    setIsClosing(true); // 닫기 애니메이션 시작
-    setTimeout(() => {
-      setUserHistoryOpen(false); // 애니메이션 끝난 뒤 닫기
-    }, 150); // popOut duration과 맞춤
+    setIsClosing(true);
+    setTimeout(() => setUserHistoryOpen(false), 150);
   };
 
-    // 바깥 클릭 시 닫기
-  const handleOverlayClick = (e) => {
-    handleClose();
-  };
+  const handleOverlayClick = () => handleClose();
+  const handleContentClick = (e) => e.stopPropagation();
 
-  // 안쪽 클릭은 닫힘 방지
-  const handleContentClick = (e) => {
-    e.stopPropagation();
-  };
-
-   // 채팅방 속성 중 게임 이름에 따른 아이콘 세팅 함수
-  function setGameIcon(gameName){
-    switch(gameName)
-    {
-      case "overwatch" :
-        return "/gameIcons/overwatch_Icon.png";
-
-      case "lol" :
-        return "/gameIcons/lol_Icon.png";
-
-      case "valorant" :
-        return "/gameIcons/valorant_Icon.png";
-
-      case "maplestory" :
-        return "/gameIcons/maplestory_Icon.png";
-
-       case "lostark" :
-        return "/gameIcons/lostark_Icon.png";
-
-      default:
-        return "https://placehold.co/45";
+  function setGameIcon(gameName) {
+    switch (gameName) {
+      case "overwatch": return "/gameIcons/overwatch_Icon.png";
+      case "lol": return "/gameIcons/lol_Icon.png";
+      case "dnf": return "/gameIcons/dnf_Icon.png";
+      case "maplestory": return "/gameIcons/maplestory_Icon.png";
+      case "lostark": return "/gameIcons/lostark_Icon.png";
+      default: return "https://placehold.co/45";
     }
   }
 
-  const [userGameCode, setUserGameCode] = useState('');
-
-  useEffect(()=>{
+  useEffect(() => {
     if (!historyUserId || !sendToModalGameName) return;
 
-    axios.get('/api/get/user/gamedata', { 
+    setDelayedShow(true);
+
+    axios.get('/api/get/user/gamedata', {
       params: {
         userId: historyUserId,
         gameName: sendToModalGameName
-      }})
+      }
+    })
       .then((res) => {
-        console.log(res.data)
-        setUserGameCode(res.data)
-      })
-      .catch((err) => console.error('실패3', err));
-  },[historyUserId, sendToModalGameName])
+        const gameCode = res.data?.gameCode;
+        if (!gameCode) {
+          setUserGameCode(null);
+          setErrorMessage("게임 정보를 찾을 수 없습니다.");
+          return;
+        }
 
+        const cached = riotCache[gameCode];
+        const now = Date.now();
+        const gameData = { gameCode };
+
+        if (cached && (now - cached.timestamp < CACHE_DURATION)) {
+          console.log("캐시 사용됨");
+          setUserGameCode(cached.data);
+          setErrorMessage(null);
+          return;
+        }
+
+        if (sendToModalGameName === 'lol') {
+          setDelayedShow(false);
+
+          setTimeout(async () => {
+            try {
+              const res2 = await axios.get('/riot/stats/by-gamecode', {
+                params: { gameCode }
+              });
+
+              gameData.riotStats = res2.data;
+
+              riotCache[gameCode] = {
+                data: gameData,
+                timestamp: Date.now()
+              };
+
+              setUserGameCode(gameData);
+              setDelayedShow(true);
+              setErrorMessage(null);
+
+            } catch (err2) {
+              console.error('라이엇 전적 불러오기 실패', err2);
+              setDelayedShow(true);
+              setErrorMessage("게임 정보를 ㄱㄱ");
+            }
+          }, DISPLAY_DELAY);
+
+          return;
+        }
+
+        if (sendToModalGameName === 'dnf') {
+          (async () => {
+            try {
+              const res2 = await axios.get('/dnf/stats/by-gamecode', {
+                params: { gameCode }
+              });
+        
+              gameData.dnfStats = res2.data;
+              setUserGameCode(gameData);
+              setErrorMessage(null);
+            } catch (err2) {
+              console.error('던파 전적 불러오기 실패', err2);
+              setErrorMessage("던파 정보를 불러오지 못했습니다.");
+            }
+          })();
+        
+          return;
+        }
+        setUserGameCode(gameData);
+        setErrorMessage(null);
+      })
+      .catch((err) => {
+        console.error('게임코드 불러오기 실패', err);
+        setUserGameCode(null);
+        setErrorMessage("게임 정보를 불러오지 못했습니다.");
+      });
+
+  }, [historyUserId, sendToModalGameName]);
 
   return (
-    <div className="modalOverlay" onClick={ handleOverlayClick }>
+    <div className="modalOverlay" onClick={handleOverlayClick}>
       <div className={`modalContent ${isClosing ? 'pop-out' : ''}`} onClick={handleContentClick}>
-
         <div className='modalHeader'>
-            <img src={`${setGameIcon(sendToModalGameName)}`} alt="방 아이콘" className="chatCardImage" />
-            <h3>{historyUserId ? historyUserId : "없어"} 님의 전적</h3>
-
-          <div onClick={handleClose}>
-            <h3>🗙</h3>
-          </div>
+          <img src={setGameIcon(sendToModalGameName)} alt="게임 아이콘" className="chatCardImage" />
+          <h3>{historyUserId ? `${historyUserId} 님의 전적` : "없어"}</h3>
+          <div onClick={handleClose}><h3>🗙</h3></div>
         </div>
 
         <div className='modalInContent'>
-          <p> { userGameCode ? userGameCode.gameCode : '해당 유저의 게임코드가 없음'}</p>
-        </div>
+          <p>{userGameCode ? userGameCode.gameCode : ' '}</p>
 
+          {sendToModalGameName === 'lol' && delayedShow && (
+            <LOLPage riotStats={userGameCode?.riotStats} />
+          )}
+
+          {sendToModalGameName === 'lol' && !delayedShow && (
+            <p style={{ color: '#aaa', fontStyle: 'italic', marginTop: '12px' }}>
+              🔄 데이터를 불러오는 중입니다. 잠시만 기다려 주세요 (50초)
+            </p>
+          )}
+
+          {sendToModalGameName === 'dnf' && (
+            <DNFPage dnfStats={userGameCode?.dnfStats} />
+          )}
+
+          {errorMessage && (
+            <p style={{ color: 'red', fontWeight: 'bold', marginTop: '16px', textAlign: 'center' }}>
+              {errorMessage}
+            </p>
+          )}
+        </div>
       </div>
     </div>
   );
