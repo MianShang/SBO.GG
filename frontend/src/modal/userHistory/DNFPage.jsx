@@ -41,6 +41,13 @@ function DNFPage({ dnfStats, serverId, nickname }) {
       <div className="equipment-list scroll-container">
         {equipment.map((item, index) => (
           <div key={index} className="equipment-item">
+            <img
+            src={`https://img-api.neople.co.kr/df/items/${item.itemId}`}
+            alt={item.itemName}
+            width={40}
+            height={40}
+            style={{ marginBottom: '6px', borderRadius: '4px' }}
+          />
             <p>부위: {item.slotName}</p>
             <p>이름: {item.itemName}</p>
             <p>종류: {item.itemType}</p>

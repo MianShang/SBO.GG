@@ -9,6 +9,7 @@ public class DnfEquipmentDto {
     private String itemType;
     private String itemRarity;
     private String slotName;
+    private String itemId;
 
     @Override
     public String toString() {
@@ -17,6 +18,7 @@ public class DnfEquipmentDto {
                 ", itemType='" + itemType + '\'' +
                 ", itemRarity='" + itemRarity + '\'' +
                 ", slotName='" + slotName + '\'' +
+                ", itemId='" + itemId + '\'' +
                 '}';
     }
 

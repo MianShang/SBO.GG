@@ -25,7 +25,6 @@ public class DNFService {
     public DNFDto getDNF(String serverId, String nickname) {
 
         //serverId = convertServerNameToId(serverId);
-
         HttpHeaders headers = new HttpHeaders();
         headers.set("x-api-key", dnfconfig.getApiKey());
         HttpEntity<String> entity = new HttpEntity<>(headers);
@@ -41,19 +40,19 @@ public class DNFService {
                     idUrl, HttpMethod.GET, entity, DnfCharacterIdDto.class);
 
 
-            System.out.println("🔥 캐릭터 ID 응답 원문: " + idResponse.getBody());
+            System.out.println("캐릭터 ID 응답 원문: " + idResponse.getBody());
 
             if (idResponse.getBody() == null || idResponse.getBody().getRows() == null || idResponse.getBody().getRows().isEmpty()) {
-                System.out.println("❌ 캐릭터를 찾을 수 없습니다: " + nickname);
+                System.out.println("캐릭터를 찾을 수 없습니다: " + nickname);
                 return null;
             }
 
 
             String characterId = idResponse.getBody().getRows().get(0).getCharacterId();
-            String correctedServerId = idResponse.getBody().getRows().get(0).getServerId(); // 정확한 서버 ID
+            String correctedServerId = idResponse.getBody().getRows().get(0).getServerId();
 
-            dto.setCharacterId(characterId);         // ✅ 추가
-            dto.setServerId(correctedServerId);      // ✅ 추가
+            dto.setCharacterId(characterId);
+            dto.setServerId(correctedServerId);
 
             // 2. 장착 장비 API 호출
             String equipUrl = "https://api.neople.co.kr/df/servers/" + serverId + "/characters/" + characterId + "/equip/equipment?apikey=" + dnfconfig.getApiKey();
@@ -69,9 +68,9 @@ public class DNFService {
             ObjectMapper mapper = new ObjectMapper();
             JsonNode root = mapper.readTree(responseBody);
 
-            System.out.println("📌 응답 원문: " + responseBody);
-            System.out.println("📌 level: " + root.path("level").asText());
-            System.out.println("📌 equipment: " + root.path("equipment"));
+            System.out.println("응답 원문: " + responseBody);
+            System.out.println("level: " + root.path("level").asText());
+            System.out.println("equipment: " + root.path("equipment"));
 
             dto.setCharacterName(root.path("characterName").asText());
             dto.setLevel(root.path("level").asInt());
@@ -86,16 +85,17 @@ public class DNFService {
                 eq.setItemType(item.path("itemType").asText());
                 eq.setItemRarity(item.path("itemRarity").asText());
                 eq.setSlotName(item.path("slotName").asText());
+                eq.setItemId(item.path("itemId").asText());
                 list.add(eq);
             }
 
             dto.setEquipment(list);
 
-            System.out.println("🔥 최종 DNFDto: " + dto);
+            System.out.println("최종 DNFDto: " + dto);
 
 
         } catch (Exception e) {
-            System.out.println("⚠️ 예외 발생: " + e.getMessage());
+            System.out.println("예외 발생: " + e.getMessage());
             e.printStackTrace();
             return null;
         }
