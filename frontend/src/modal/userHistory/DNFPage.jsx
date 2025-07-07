@@ -48,6 +48,11 @@ function DNFPage({ dnfStats, serverId, nickname }) {
             height={40}
             style={{ marginBottom: '6px', borderRadius: '4px' }}
           />
+          {item.reinforce > 0 && (
+            <p style={{ color: item.amplificationName === "증폭" ? "#FF66CC" : "#FFD700", fontWeight: "bold" }}>
+             {item.amplificationName === "증폭" ? "증폭 +" : "+"}{item.reinforce}
+            </p>
+          )}
             <p>부위: {item.slotName}</p>
             <p>이름: {item.itemName}</p>
             <p>종류: {item.itemType}</p>

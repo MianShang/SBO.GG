@@ -86,6 +86,8 @@ public class DNFService {
                 eq.setItemRarity(item.path("itemRarity").asText());
                 eq.setSlotName(item.path("slotName").asText());
                 eq.setItemId(item.path("itemId").asText());
+                eq.setReinforce(item.path("reinforce").asInt());
+                eq.setAmplificationName(item.path("amplificationName").asText(null));
                 list.add(eq);
             }
 

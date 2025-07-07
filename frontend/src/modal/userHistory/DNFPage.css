@@ -40,8 +40,8 @@
 }
 
 .dnf-image img {
-  width: 100px;
-  height: 100px;
+  width: 150p;
+  height: 150px;
   object-fit: contain;
 }
 
@@ -80,7 +80,7 @@
   border-radius: 8px;
   padding: 12px;
   height: auto;             
-  max-height: 180px;        
+  max-height: 170px;        
   display: flex;
   flex-direction: column;
   overflow: hidden;
