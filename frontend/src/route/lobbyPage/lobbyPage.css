@@ -1,244 +1,244 @@
-/* 전체 화면 채우기 */
-.fullscreen {
-    height: 100%;
-    width: 100%;
-}
+    /* 전체 화면 채우기 */
+    .fullscreen {
+        height: 100%;
+        width: 100%;
+    }
 
-/* div 외곽선 표시 (개발용) */
-.getLine{
-    border: 1px solid white;
-}
+    /* div 외곽선 표시 (개발용) */
+    .getLine{
+        border: 1px solid white;
+    }
 
-/* ================================sideBar============================= */
+    /* ================================sideBar============================= */
 
-/* 기본 스타일 (곡률, div 배경색상, 중앙정렬) */
-.contentStyle{
-    background-color: rgb(38, 38, 38);
-    border-radius: 12px;
-    text-align: center;
-}
+    /* 기본 스타일 (곡률, div 배경색상, 중앙정렬) */
+    .contentStyle{
+        background-color: rgb(38, 38, 38);
+        border-radius: 12px;
+        text-align: center;
+    }
 
-/* 사이드바 사이즈 */
-.sideBarSize{
-    width: 100px;
-    height: 97.5vh;
-}
+    /* 사이드바 사이즈 */
+    .sideBarSize{
+        width: 100px;
+        height: 97.5vh;
+    }
 
-/* 확장된 사이드바 사이즈 */
-.sideBarExpanded {
-    width: 410px; 
-    height: 97.5vh;
-}
+    /* 확장된 사이드바 사이즈 */
+    .sideBarExpanded {
+        width: 410px; 
+        height: 97.5vh;
+    }
 
-/* 사이드바 이미지 사이즈 */
-.sideBarImgSize{
-    border-radius: 50%;
-    margin-top: 10px;
-    width: 75px;
-}
+    /* 사이드바 이미지 사이즈 */
+    .sideBarImgSize{
+        border-radius: 50%;
+        margin-top: 10px;
+        width: 75px;
+    }
 
-/* 확장된 사이드바 이미지 사이즈 */
-.sideBarImgSizeExpanded{
-    border-radius: 50%;
-    margin-top: 10px;
-    width: 300px;
-}
+    /* 확장된 사이드바 이미지 사이즈 */
+    .sideBarImgSizeExpanded{
+        border-radius: 50%;
+        margin-top: 10px;
+        width: 300px;
+    }
 
-/* 사이드바 확장시 표시되는 div스타일  */
-.sideBarDetailSize{
-    height: calc(100% - 375px);
-    border-radius: 7px;
-    border: 1px solid gray;
-    color: white;
-}
+    /* 사이드바 확장시 표시되는 div스타일  */
+    .sideBarDetailSize{
+        height: calc(100% - 375px);
+        border-radius: 7px;
+        border: 1px solid gray;
+        color: white;
+    }
 
-/* 사이드바 확장시 표시되는 div 버튼 스타일  */
-.sideBarButton{
-    height: 40px;
-    width: 380px;
-    border-radius: 7px;
-    margin-top: 5px;
-    margin-left: 10px;
-    background-color: gray;
-}
+    /* 사이드바 확장시 표시되는 div 버튼 스타일  */
+    .sideBarButton{
+        height: 40px;
+        width: 380px;
+        border-radius: 7px;
+        margin-top: 5px;
+        margin-left: 10px;
+        background-color: gray;
+    }
 
-/* ================================midBar============================= */
+    /* ================================midBar============================= */
 
-/* 중앙 div 사이즈  */
-.midBarSize{
-    width: 300px;
-    height: 97.5vh;
+    /* 중앙 div 사이즈  */
+    .midBarSize{
+        width: 300px;
+        height: 97.5vh;
 
-    margin-left: 10px;
-}
+        margin-left: 10px;
+    }
 
-/* 중앙 채팅/친구 토글 div 스타일  */
-.toggleSwitch{
-    width: 145px;
-    height: 40px;
-    cursor: pointer;
-    transition: box-shadow 0.3s ease;
+    /* 중앙 채팅/친구 토글 div 스타일  */
+    .toggleSwitch{
+        width: 145px;
+        height: 40px;
+        cursor: pointer;
+        transition: box-shadow 0.3s ease;
 
-    /* 추가된 중앙 정렬 속성 */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    
-}
+        /* 추가된 중앙 정렬 속성 */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        
+    }
 
-/* 중앙 채팅/친구 토글 div 폰트 스타일  */
-.toggleSwitchText{
-    font-size: 22px;
-}
-
-
-/* 토글 버튼 활성시 그래픽 */
-.activeBorder {
-    box-shadow: inset 0 0 0 1px white;
-    color: white;
-}
-
-/* 토글버튼 하단의 div 사이즈 */
-.listSize{
-    margin-top: 10px;
-    height: calc(100% - 50px); 
-}
-
-/* ================================rightBar============================= */
-
-/* 우측 div 사이즈  */
-.rightBarSize{
-    margin-left: 10px;
-    height: 97.5vh;
-    width: calc(100% - 440px);  /* width 자동 조절  */
-}
-
-/* 채팅창 사이즈 */
-.chatSize{
-    height: calc(100% - 85px);
-}
-
-/* 하단 광고바 사이즈 */
-.adSize{
-    margin-top: 10px;
-    height: 75px;
-    width: calc(100% - 85px);
-}
-
-/* 하단 검색창 버튼 div 사이즈 */
-.searchSize{
-    margin-left: 10px;
-    margin-top: 10px;
-    height: 75px;
-    width: 75px;
-}
-
-/* 하단 검색창 버튼 div 호버시 그래픽 */
-.searchSize:hover {
-    transition: box-shadow 0.3s ease;
-    box-shadow: inset 0 0 0 1px white;
-}
-
-/* 하단 검색창 버튼 div 내부 이미지 포지션 */
-.imgPos{
-    width: 65px;
-}
+    /* 중앙 채팅/친구 토글 div 폰트 스타일  */
+    .toggleSwitchText{
+        font-size: 22px;
+    }
 
 
+    /* 토글 버튼 활성시 그래픽 */
+    .activeBorder {
+        box-shadow: inset 0 0 0 1px white;
+        color: white;
+    }
 
-/* 스크롤바 전체 영역 */
-.scroll-container::-webkit-scrollbar {
-  width: 8px;
-}
+    /* 토글버튼 하단의 div 사이즈 */
+    .listSize{
+        margin-top: 10px;
+        height: calc(100% - 50px); 
+    }
 
-/* 스크롤바 트랙(배경) */
-.scroll-container::-webkit-scrollbar-track {
-  background: #1e1e1e;
-  border-radius: 4px;
-}
+    /* ================================rightBar============================= */
 
-/* 스크롤바 핸들 */
-.scroll-container::-webkit-scrollbar-thumb {
-  background-color: #888;
-  border-radius: 4px;
-  border: 2px solid #1e1e1e;
-}
+    /* 우측 div 사이즈  */
+    .rightBarSize{
+        margin-left: 10px;
+        height: 97.5vh;
+        width: calc(100% - 440px);  /* width 자동 조절  */
+    }
 
-/* 스크롤바 호버 시 */
-.scroll-container::-webkit-scrollbar-thumb:hover {
-  background: #aaa;
-}
+    /* 채팅창 사이즈 */
+    .chatSize{
+        height: calc(100% - 85px);
+    }
 
-/* Firefox용 */
-.scroll-container {
-  scrollbar-width: thin;
-  scrollbar-color: #888 #1e1e1e;
-}
+    /* 하단 광고바 사이즈 */
+    .adSize{
+        margin-top: 10px;
+        height: 75px;
+        width: calc(100% - 85px);
+    }
 
-/* ================================ChatDiv============================= */
+    /* 하단 검색창 버튼 div 사이즈 */
+    .searchSize{
+        margin-left: 10px;
+        margin-top: 10px;
+        height: 75px;
+        width: 75px;
+    }
 
-.chatDivStyle{
-    height: calc(100% - 60px);
-    overflow-y: auto;
-    box-shadow: inset 0px -5px 10px rgba(0, 0, 0, 0.5);
-}
+    /* 하단 검색창 버튼 div 호버시 그래픽 */
+    .searchSize:hover {
+        transition: box-shadow 0.3s ease;
+        box-shadow: inset 0 0 0 1px white;
+    }
 
-.chatContentStyle{
-    color: white;
-    margin-left: 10px;
-}
+    /* 하단 검색창 버튼 div 내부 이미지 포지션 */
+    .imgPos{
+        width: 65px;
+    }
 
-.chatStyle{
-    display: inline-block;
-    max-width: 300px;
-    padding: 5px 10px;
-    margin-left: 10px;
+
+
+    /* 스크롤바 전체 영역 */
+    .scroll-container::-webkit-scrollbar {
+    width: 8px;
+    }
+
+    /* 스크롤바 트랙(배경) */
+    .scroll-container::-webkit-scrollbar-track {
+    background: #1e1e1e;
     border-radius: 4px;
-    background-color: white;
-    color: black;
-    word-break: break-word;
-}
+    }
 
-.myChatStyle{
-    display: flex;
-    margin-right: 10px;
-    flex-direction: column;
-    align-items: flex-end; /* 오른쪽 정렬 */
-}
+    /* 스크롤바 핸들 */
+    .scroll-container::-webkit-scrollbar-thumb {
+    background-color: #888;
+    border-radius: 4px;
+    border: 2px solid #1e1e1e;
+    }
 
-/* ================================input Style============================= */
-.chatInputStyle {
-    flex: 1;
-    padding: 10px 14px;
-    border-radius: 20px;
-    border: none;
-    outline: none;
-    background-color:gray;   
+    /* 스크롤바 호버 시 */
+    .scroll-container::-webkit-scrollbar-thumb:hover {
+    background: #aaa;
+    }
 
-    width:calc(100% - 120px);
-    margin-top: 11px;
-    margin-left: 11px;
-    color: #fff;
-    font-size: 14px;
-}
+    /* Firefox용 */
+    .scroll-container {
+    scrollbar-width: thin;
+    scrollbar-color: #888 #1e1e1e;
+    }
 
-.chatInputStyle::placeholder {
-    color: #aaa;
-}
+    /* ================================ChatDiv============================= */
 
-.chatButtonStyle {
-    margin-left: 10px;
-    margin-top: 11px;
-    padding: 8px 16px;
-    border: none;
-    border-radius: 20px;
-    background-color: #5865F2;   
-    color: white;
-    cursor: pointer;
-    font-weight: 500;
-    transition: background-color 0.2s ease;
-}
+    .chatDivStyle{
+        height: calc(100% - 60px);
+        overflow-y: auto;
+        box-shadow: inset 0px -5px 10px rgba(0, 0, 0, 0.5);
+    }
 
-.chatButtonStyle:hover {
-    background-color: #4752c4;
-}
+    .chatContentStyle{
+        color: white;
+        margin-left: 10px;
+    }
+
+    .chatStyle{
+        display: inline-block;
+        max-width: 300px;
+        padding: 5px 10px;
+        margin-left: 10px;
+        border-radius: 4px;
+        background-color: white;
+        color: black;
+        word-break: break-word;
+    }
+
+    .myChatStyle{
+        display: flex;
+        margin-right: 10px;
+        flex-direction: column;
+        align-items: flex-end; /* 오른쪽 정렬 */
+    }
+
+    /* ================================input Style============================= */
+    .chatInputStyle {
+        flex: 1;
+        padding: 10px 14px;
+        border-radius: 20px;
+        border: none;
+        outline: none;
+        background-color:gray;   
+
+        width:calc(100% - 120px);
+        margin-top: 11px;
+        margin-left: 11px;
+        color: #fff;
+        font-size: 14px;
+    }
+
+    .chatInputStyle::placeholder {
+        color: #aaa;
+    }
+
+    .chatButtonStyle {
+        margin-left: 10px;
+        margin-top: 11px;
+        padding: 8px 16px;
+        border: none;
+        border-radius: 20px;
+        background-color: #5865F2;   
+        color: white;
+        cursor: pointer;
+        font-weight: 500;
+        transition: background-color 0.2s ease;
+    }
+
+    .chatButtonStyle:hover {
+        background-color: #4752c4;
+    }

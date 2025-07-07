@@ -11,5 +11,6 @@ public class DnfCharacterIdDto {
     @Data
     public static class Row {
         private String characterId;
+        private String serverId;
     }
 }

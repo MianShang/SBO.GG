@@ -5,6 +5,8 @@ import java.util.List;
 
 @Data
 public class DNFDto {
+    private String characterId; // 이미지를 가져오기 위해
+    private String serverId; //
     private String characterName;
     private String jobName;
     private int level;
@@ -16,7 +18,9 @@ public class DNFDto {
     @Override
     public String toString() {
         return "DNFDto{" +
-                "characterName='" + characterName + '\'' +
+                "serverId='" + serverId + '\'' +
+                ", characterId='" + characterId + '\'' +
+                ", characterName='" + characterName + '\'' +
                 ", level=" + level +
                 ", jobName='" + jobName + '\'' +
                 ", guildName='" + guildName + '\'' +

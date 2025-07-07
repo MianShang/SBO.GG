@@ -48,7 +48,12 @@ public class DNFService {
                 return null;
             }
 
+
             String characterId = idResponse.getBody().getRows().get(0).getCharacterId();
+            String correctedServerId = idResponse.getBody().getRows().get(0).getServerId(); // 정확한 서버 ID
+
+            dto.setCharacterId(characterId);         // ✅ 추가
+            dto.setServerId(correctedServerId);      // ✅ 추가
 
             // 2. 장착 장비 API 호출
             String equipUrl = "https://api.neople.co.kr/df/servers/" + serverId + "/characters/" + characterId + "/equip/equipment?apikey=" + dnfconfig.getApiKey();
