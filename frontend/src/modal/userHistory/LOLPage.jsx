@@ -16,21 +16,21 @@ function LOLPage({ riotStats }) {
     : '-';
 
   const [selectedMode, setSelectedMode] = useState('solo');
-  const tierImageUrl = `https://opgg-static.akamaized.net/images/medals/${tier.toLowerCase()}_${romanToNumber(rank)}.png`;
+  const tierImageUrl = `/tiers/${tier.toLowerCase()}.png`;
 
   return (
     <div className="lol-box">
       <div className="tier-box">
         <img src={tierImageUrl} alt="티어 이미지" className="tier-img" />
         <div className="tier-info">
-          <p>🏆 티어: {tier} {rank} ({lp} LP)</p>
-          <p>📊 승률: {winRate}</p>
-          <p>🔢 레벨: {level}</p>
+          <p>티어: {tier} {rank} ({lp} LP)</p>
+          <p>승률: {winRate}</p>
+          <p>레벨: {level}</p>
         </div>
       </div>
 
       <div className="most-section">
-        <p className="most-title">🔥 모스트 챔피언</p>
+        <p className="most-title">모스트 챔피언</p>
 
         <div className="mode-buttons">
           {Object.keys(most).map((mode) => (
@@ -39,7 +39,7 @@ function LOLPage({ riotStats }) {
               onClick={() => setSelectedMode(mode)}
               className={`mode-button ${selectedMode === mode ? 'active' : ''}`}
             >
-              🎮 {mode.toUpperCase()}
+              {mode.toUpperCase()}
             </button>
           ))}
         </div>

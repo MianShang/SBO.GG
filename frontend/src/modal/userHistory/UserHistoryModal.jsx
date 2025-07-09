@@ -3,10 +3,10 @@ import axios from 'axios';
 import './UserHistoryModal.css';
 import LOLPage from './LOLPage';
 
-// 캐시 구조: { [gameCode]: { data: gameData, timestamp: Date.now() } }
+// Riot 전적 캐시: 동일한 gameCode에 대해 중복 요청을 막기 위함
 const riotCache = {};
-const CACHE_DURATION = 60 * 60 * 1000; // 30분 (ms)
-const DISPLAY_DELAY = 50 * 1000;       // 1분 지연 (ms)
+const CACHE_DURATION = 60 * 60 * 1000; // 캐시 유효시간: 1시간 (ms)
+const DISPLAY_DELAY = 10 * 1000;       // 롤 전적 표시 지연시간: 10초 (ms)
 
 function UserHistoryModal({ setUserHistoryOpen, historyUserId, sendToModalGameName }) {
   const [isClosing, setIsClosing] = useState(false);          // 모달 닫힘 애니메이션 제어
@@ -35,12 +35,13 @@ function UserHistoryModal({ setUserHistoryOpen, historyUserId, sendToModalGameNa
     }
   }
 
-  // 게임코드 및 Riot 전적 데이터 불러오기
+  // 유저 ID와 게임 이름을 기반으로 게임코드 및 Riot 전적 조회
   useEffect(() => {
     if (!historyUserId || !sendToModalGameName) return;
 
-    setDelayedShow(true); // 기본값은 표시함
+    setDelayedShow(true); // 초기값은 표시함
 
+    // 게임코드 조회
     axios.get('/api/get/user/gamedata', {
       params: {
         userId: historyUserId,
@@ -60,7 +61,7 @@ function UserHistoryModal({ setUserHistoryOpen, historyUserId, sendToModalGameNa
 
       const gameData = { gameCode };
 
-      // 캐시가 유효하면 즉시 반영
+      // 캐시가 있으면 그대로 사용
       if (cached && (now - cached.timestamp < CACHE_DURATION)) {
         console.log("캐시 사용됨");
         setUserGameCode(cached.data);
@@ -68,11 +69,11 @@ function UserHistoryModal({ setUserHistoryOpen, historyUserId, sendToModalGameNa
         return;
       }
 
-      // 롤일 경우에만 1분 지연 후 API 호출
+      // 롤 전적은 일정 시간 지연 후 요청
       if (sendToModalGameName === 'lol') {
         setDelayedShow(false); // 표시 막기
 
-        // 1분 후에 API 호출
+        // 10초 후 API 요청
         setTimeout(async () => {
           try {
             const res2 = await axios.get('/riot/stats/by-gamecode', {
@@ -81,13 +82,14 @@ function UserHistoryModal({ setUserHistoryOpen, historyUserId, sendToModalGameNa
 
             gameData.riotStats = res2.data;
 
+            // 캐시에 저장
             riotCache[gameCode] = {
               data: gameData,
               timestamp: Date.now()
             };
 
             setUserGameCode(gameData);
-            setDelayedShow(true); 
+            setDelayedShow(true);  // 전적 표시 다시 켬       
             setErrorMessage(null); // 성공 시 에러 초기화
             
           } catch (err2) {
@@ -132,10 +134,10 @@ function UserHistoryModal({ setUserHistoryOpen, historyUserId, sendToModalGameNa
             <LOLPage riotStats={userGameCode?.riotStats} />
           )}
 
-          {/* 처음 불러오는 경우 1분 대기 문구 표시 */}
+          {/* 처음 불러오는 경우 10초 대기 문구 표시 */}
           {sendToModalGameName === 'lol' && !delayedShow && (
             <p style={{ color: '#aaa', fontStyle: 'italic', marginTop: '12px' }}>
-              🔄 데이터를 불러오는 중입니다. 잠시만 기다려 주세요 (50초)
+              데이터를 불러오는 중입니다. 잠시만 기다려 주세요.
             </p>
           )}
 
