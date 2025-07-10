@@ -16,6 +16,7 @@ function SearchPage() {
   const [name, setName]  = useState('');
   const [rooms, setRooms] = useState([]);
   const [gameName, setGameName] = useState('');
+  const [searchKeyword, setSearchKeyword] = useState('');
 
   // State 보관함 해체
   const {isLogIn, setIsLogIn, userData} = useContext(LogContext)
@@ -24,14 +25,12 @@ function SearchPage() {
   useLoginCheck(isLogIn);   // 로그인 체크 훅
 
   
-  // 처음 url에 입장할때 목록 가져오기 실행
+  // 처음 url에 입장할때 목록 가져오기 실행 및 채팅방 검색
   useEffect(() => {
-    axios.get('/api/chat/rooms')
-      .then((res) => {
-        setRooms(res.data);   // rooms에 채팅방
-      })
-      .catch((err) => console.error('방 목록 가져오기 실패', err));
-  }, []);
+  axios.get('/api/chat/rooms', {
+      params: { keyword: searchKeyword }
+    }).then((res) => setRooms(res.data));
+  }, [searchKeyword]);
 
   // 채팅방 생성 API
   function createRoom() {
@@ -75,7 +74,13 @@ function SearchPage() {
 
         {/* 검색 바 */}
         <div className='contentStyle searchBarSize'>
-          검색창임
+          <input
+            type="text"
+            placeholder="방 이름 검색"
+            value={searchKeyword}
+            onChange={(e) => setSearchKeyword(e.target.value)}
+            className="searchInput"
+          />
         </div>
 
 
@@ -83,8 +88,7 @@ function SearchPage() {
         <div className='contentStyle chatListSize'>
 
           {/* 채팅방 리스트 */}
-          <div>
-            채팅 리스트
+          <div className='chatListScroll'>
             {
               rooms.map((room) => (
                 <div
@@ -92,14 +96,14 @@ function SearchPage() {
                   onClick={() => { saveUserChatRoom(room.id); }} // 채팅방 선택
                   style={{color:"white", border:"1px solid", margin: "10px", height:"50px"}}>
                   
-                  <div>{room.name} {room.id}</div>
+                  <div>{room.name}</div>
                 </div>
               ))
             }
           </div>
           
-          {/* 채팅방 생성 */}
-          <div>
+          {/* 채팅방 생성 영역 */}
+          <div className='chatCreate'>
             <select value={gameName} onChange={(e) => setGameName(e.target.value)}>
               <option value="" disabled selected>--선택해주세요--</option>
               <option value="overwatch">오버워치</option>
