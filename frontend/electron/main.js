@@ -1,5 +1,6 @@
-const { app, BrowserWindow } = require('electron');
+const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
+const psList = require('ps-list').default; // 프로세스 리스트 가져오는 모듈
 
 function createWindow() {
   const win = new BrowserWindow({
@@ -9,6 +10,7 @@ function createWindow() {
     minHeight: 800,       // 최소 높이
     webPreferences: {
       nodeIntegration: true,
+      contextIsolation: false, // IPC 사용을 위해 false (보안 강화 시 preload 사용 권장)
     }
   });
 
@@ -20,6 +22,12 @@ function createWindow() {
       : 'http://localhost:5173'
   );
 }
+
+// 프로세스 요청 수신
+ipcMain.handle('get-process-list', async () => {
+  const processes = await psList();
+  return processes;
+});
 
 app.whenReady().then(createWindow);
 

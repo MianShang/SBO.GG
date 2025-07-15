@@ -3,13 +3,13 @@ import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import './App.css'
 
-{/* 컴포넌트 import */}
+// 컴포넌트 import 
 import LobbyPage from   './route/lobbyPage/lobbyPage.jsx';
 import SearchPage from  './route/searchPage/searchPage.jsx';
 import LoginPage from   './route/loginPage/loginPage.jsx';
 
 // 로그인 체크용 Context API 생성
-export let LogContext = createContext();
+export const LogContext = createContext();
 
 function App() {
   // navigate 객체 생성
@@ -22,6 +22,31 @@ function App() {
   let [userData, setUserData] = useState({userId : null,
                                           userName : null,
                                           userEmail : null });
+
+  // 실시간 프로세스 목록 담을 State
+  const [processes, setProcesses] = useState([]);
+
+  // 메모장 실행중인지에 대한 여부 배열 state로 나중에 모든 게임들 넣으면 됨
+  const isNotepadRunning = processes.some(proc => proc.name?.toLowerCase() === 'notepad.exe');
+
+  // 1초마다 프로세스 목록 불러오는 Effect 
+  useEffect(() => {
+    const fetchProcesses = async () => {
+      try {
+        const list = await window.require('electron').ipcRenderer.invoke('get-process-list');
+        setProcesses(list);
+      } catch (error) {
+        console.error('프로세스 목록 가져오기 실패:', error);
+      }
+    };
+
+    // 최초 1회 호출 및 1초마다 갱신
+    fetchProcesses();
+    const interval = setInterval(fetchProcesses, 1000);
+
+    return () => clearInterval(interval); // 언마운트 시 clear
+  }, []);
+
                               
   // 새로고침 or 첫 로딩시 자동 실행
   useEffect(() => {
@@ -60,7 +85,7 @@ function App() {
             setIsLogIn(false);
             navigate('/login');
         });
-      }, 10 * 60 * 1000); // 10분마다 반복
+      },  60 * 1000); // 10분마다 반복
 
       // 언마운트 시 반복 중지
       return () => clearInterval(interval); 
