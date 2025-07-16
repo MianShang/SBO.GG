@@ -140,12 +140,12 @@ public class ChatController {
 
     // 채팅방 전체 조회 API
     @GetMapping("/rooms")
-    public List<ChatRoom> getChatRooms() {
-
-        // 채팅방 전체 조회
-        List<ChatRoom> chatRooms = chatRoomRepository.findAll();
-
-        return chatRooms;
+    public List<ChatRoom> getChatRooms(@RequestParam(required = false) String keyword) {
+        if (keyword == null || keyword.isBlank()) {
+            return chatRoomRepository.findAll();
+        } else {
+            return chatRoomRepository.findByNameContainingIgnoreCase(keyword);
+        }
     }
 
     // 채팅방 생성

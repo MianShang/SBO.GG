@@ -37,11 +37,38 @@
     height: 50px;
 }
 
+/* 검색 */
+.searchInput {
+  width: 100%;
+  height: 100%;
+  padding: 12px 16px;
+  border: none;
+  border-radius: 25px;
+  background-color: #2c2c2c;
+  color: white;
+  font-size: 16px;
+  outline: none;
+  box-sizing: border-box;
+}
+
+/* 검색 */
+.searchInput::placeholder {
+  color: #aaa;
+}
+
 /* 채팅방 리스트 사이즈 */
-.chatListSize{
-    margin-top: 10px;
-    height: calc(100% - 145px); 
-    
+.chatListSize {
+  margin-top: 10px;
+  height: calc(100% - 145px); 
+  overflow: hidden; 
+  display: flex;
+  flex-direction: column;
+}
+
+/* 실제 스크롤이 생길 내부 채팅 목록 컨테이너 */
+.chatListScroll {
+  overflow-y: auto;
+  flex-grow: 1;
 }
 
 /* 하단 div 사이즈 */
@@ -73,4 +100,14 @@
 /* 알림 및 토글(로비버튼) 이미지 포지션 */
 .imgPos{
     margin-top: 5px;
+}
+
+/* 채팅방 생성 */
+.chatCreate {
+  margin-top: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px; 
+  padding-bottom: 10px; 
 }
