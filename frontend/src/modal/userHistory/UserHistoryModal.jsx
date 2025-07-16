@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import './UserHistoryModal.css';
 import LOLPage from './LOLPage';
+import DNFPage from './DNFPage'; 
 
 // Riot 전적 캐시: 동일한 gameCode에 대해 중복 요청을 막기 위함
 const riotCache = {};
@@ -28,7 +29,7 @@ function UserHistoryModal({ setUserHistoryOpen, historyUserId, sendToModalGameNa
     switch (gameName) {
       case "overwatch": return "/gameIcons/overwatch_Icon.png";
       case "lol": return "/gameIcons/lol_Icon.png";
-      case "valorant": return "/gameIcons/valorant_Icon.png";
+      case "dnf": return "/gameIcons/dnf_Icon.png";
       case "maplestory": return "/gameIcons/maplestory_Icon.png";
       case "lostark": return "/gameIcons/lostark_Icon.png";
       default: return "https://placehold.co/45";
@@ -42,12 +43,14 @@ function UserHistoryModal({ setUserHistoryOpen, historyUserId, sendToModalGameNa
     setDelayedShow(true); // 초기값은 표시함
 
     // 게임코드 조회
+
     axios.get('/api/get/user/gamedata', {
       params: {
         userId: historyUserId,
         gameName: sendToModalGameName
       }
     })
+
     .then((res) => {
       const gameCode = res.data?.gameCode;
       if (!gameCode) {
@@ -69,11 +72,9 @@ function UserHistoryModal({ setUserHistoryOpen, historyUserId, sendToModalGameNa
         return;
       }
 
-      // 롤 전적은 일정 시간 지연 후 요청
       if (sendToModalGameName === 'lol') {
-        setDelayedShow(false); // 표시 막기
+        setDelayedShow(false);
 
-        // 10초 후 API 요청
         setTimeout(async () => {
           try {
             const res2 = await axios.get('/riot/stats/by-gamecode', {
@@ -82,35 +83,52 @@ function UserHistoryModal({ setUserHistoryOpen, historyUserId, sendToModalGameNa
 
             gameData.riotStats = res2.data;
 
-            // 캐시에 저장
             riotCache[gameCode] = {
               data: gameData,
               timestamp: Date.now()
             };
 
             setUserGameCode(gameData);
-            setDelayedShow(true);  // 전적 표시 다시 켬       
-            setErrorMessage(null); // 성공 시 에러 초기화
-            
+            setDelayedShow(true);
+            setErrorMessage(null);
+
           } catch (err2) {
             console.error('라이엇 전적 불러오기 실패', err2);
-            setDelayedShow(true); // 실패 시에도 표시 상태 전환
-            setErrorMessage("게임 정보를 불러오지 못했습니다.");
+            setDelayedShow(true);
+            setErrorMessage("게임 정보를 ㄱㄱ");
           }
         }, DISPLAY_DELAY);
 
-        return; 
+        return;
       }
 
-      // 롤 외 게임은 바로 표시
+      if (sendToModalGameName === 'dnf') {
+        (async () => {
+          try {
+            const res2 = await axios.get('/dnf/stats/by-gamecode', {
+              params: { gameCode }
+            });
+      
+            gameData.dnfStats = res2.data;
+            setUserGameCode(gameData);
+            setErrorMessage(null);
+          } catch (err2) {
+            console.error('던파 전적 불러오기 실패', err2);
+            setErrorMessage("던파 정보를 불러오지 못했습니다.");
+          }
+        })();
+      
+        return;
+      }
       setUserGameCode(gameData);
-      setErrorMessage(null); // 다른 게임도 성공 시 에러 초기화
+      setErrorMessage(null);
     })
     .catch((err) => {
       console.error('게임코드 불러오기 실패', err);
       setUserGameCode(null);
       setErrorMessage("게임 정보를 불러오지 못했습니다.");
     });
+
 
   }, [historyUserId, sendToModalGameName]);
 
@@ -141,7 +159,12 @@ function UserHistoryModal({ setUserHistoryOpen, historyUserId, sendToModalGameNa
             </p>
           )}
 
+          {sendToModalGameName === 'dnf' && (
+            <DNFPage dnfStats={userGameCode?.dnfStats} />
+          )}
+
           {/* 에러 메시지 표시 */}
+
           {errorMessage && (
             <p style={{ color: 'red', fontWeight: 'bold', marginTop: '16px', textAlign: 'center' }}>
               {errorMessage}

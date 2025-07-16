@@ -57,8 +57,8 @@ function ChatListPage({ selectedRoom, setSelectedRoom, setMessages }) {
       case "lol" :
         return "/gameIcons/lol_Icon.png";
 
-      case "valorant" :
-        return "/gameIcons/valorant_Icon.png";
+      case "dnf" :
+        return "/gameIcons/dnf_Icon.png";
 
       case "maplestory" :
         return "/gameIcons/maplestory_Icon.png";

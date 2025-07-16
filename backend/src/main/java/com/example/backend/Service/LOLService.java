@@ -24,7 +24,6 @@ public class LOLService {
     // 게임 닉네임+태그로 전체 전적 정보 가져오기
     public LOLDto getFullRiotStats(String name, String tag) {
         System.out.println("name: " + name);
-
         // 동일한 name+tag 조합이 있으면 API 호출 생략
         String cacheKey = name + "#" + tag;
         LOLDto cached = cacheService.get(cacheKey);
@@ -60,7 +59,9 @@ public class LOLService {
             System.out.println("📦 level: " + level);
 
             // League API 호출 → 티어/랭크/LP/승패/승률 획득
+
             String tierUrl = "https://kr.api.riotgames.com/lol/league/v4/entries/by-puuid/" + puuid;
+
             ResponseEntity<String> tierResponse = restTemplate.exchange(tierUrl, HttpMethod.GET, entity, String.class);
             List<Map<String, Object>> tierList = JsonPath.parse(tierResponse.getBody())
                     .read("$[?(@.queueType == 'RANKED_SOLO_5x5')]");
@@ -78,7 +79,9 @@ public class LOLService {
                 dto.setLosses(losses);
                 dto.setWinRate(String.format("%.1f", winRate));
 
+
                 System.out.println("티어: " + tier.get("tier") + " " + tier.get("rank") + " (" + tier.get("leaguePoints") + " LP)");
+
             }
 
             // Match ID 목록 가져오기

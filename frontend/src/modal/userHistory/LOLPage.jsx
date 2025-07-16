@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import './LOLPage.css';
 
 function LOLPage({ riotStats }) {
+
   // riotStats가 없을 경우 메시지 표시 및 유효한 데이터인지 체크 (tier 또는 most가 없을 경우 예외 처리)
   if (!riotStats || !riotStats.tier || Object.keys(riotStats.most || {}).length === 0) {
     return (
@@ -10,27 +11,34 @@ function LOLPage({ riotStats }) {
     );
   }
 
+
   const { tier, rank, lp, wins, losses, level, most } = riotStats;
   const winRate = wins + losses > 0
     ? `${((wins * 100) / (wins + losses)).toFixed(1)}% (${wins}승 ${losses}패)`
     : '-';
 
   const [selectedMode, setSelectedMode] = useState('solo');
+
   const tierImageUrl = `/tiers/${tier.toLowerCase()}.png`;
+
 
   return (
     <div className="lol-box">
       <div className="tier-box">
         <img src={tierImageUrl} alt="티어 이미지" className="tier-img" />
         <div className="tier-info">
+
           <p>티어: {tier} {rank} ({lp} LP)</p>
           <p>승률: {winRate}</p>
           <p>레벨: {level}</p>
+
         </div>
       </div>
 
       <div className="most-section">
+
         <p className="most-title">모스트 챔피언</p>
+
 
         <div className="mode-buttons">
           {Object.keys(most).map((mode) => (
@@ -39,7 +47,9 @@ function LOLPage({ riotStats }) {
               onClick={() => setSelectedMode(mode)}
               className={`mode-button ${selectedMode === mode ? 'active' : ''}`}
             >
+
               {mode.toUpperCase()}
+
             </button>
           ))}
         </div>

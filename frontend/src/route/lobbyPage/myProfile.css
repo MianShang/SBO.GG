@@ -1,0 +1,103 @@
+.modal-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+  
+  .modal-content {
+    background-color: #1e1e1e;       
+    color: #f0f0f0;                 
+    padding: 2rem;
+    border-radius: 10px;
+    width: 600px;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
+    gap: 20px;
+  }
+  
+  .profile-flex-box {
+    display: flex;
+    flex-direction: row;
+    gap: 30px;
+    align-items: stretch;
+    
+  }
+
+
+  
+  .left-box img {
+    width: 250px;
+    height: 250px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+  
+  .left-box {
+    padding-right: 20px;
+    
+    display: flex;
+    align-items: flex-start;
+  }
+  
+  .right-box {
+    flex: 1;
+    max-width: 250px; 
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 12px;
+    border-right: none;
+  }
+  
+  
+ 
+  .tag-box {
+    display: flex;
+    max-width: 610px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  
+  .tag-title {
+    font-weight: bold;
+    margin-top: 10px;
+    color: #aaa;
+  }
+
+  .tag-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .frequent-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  
+  .tag {
+    background-color: #3a3a3a;
+    color: #fff;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 13px;
+    
+    
+  }
+  
+  .bottom-box {
+    padding-top: 10px;
+    max-width: 500px;
+    
+  }
+  
+ 
+  

@@ -95,18 +95,40 @@ function SearchPage() {
         </div>
 
         {/* 채팅방 리스트 */}
-        <div className='chatListScroll contentStyle chatListSize'>
-          {
-            rooms.map((room) => (
-              <div
-                key={room.id}
-                onClick={() => saveUserChatRoom(room.id)}
-                style={{ color: "white", border: "1px solid", margin: "10px", height: "50px", cursor: "pointer" }}
-              >
-                <div>{room.name}</div>
-              </div>
-            ))
-          }
+
+        <div className='contentStyle chatListSize'>
+
+          {/* 채팅방 리스트 */}
+          <div>
+            채팅 리스트
+            {
+              rooms.map((room) => (
+                <div
+                  key={room.id}
+                  onClick={() => { saveUserChatRoom(room.id); }} // 채팅방 선택
+                  style={{color:"white", border:"1px solid", margin: "10px", height:"50px"}}>
+                  
+                  <div>{room.name} {room.id}</div>
+                </div>
+              ))
+            }
+          </div>
+          
+          {/* 머지 충돌 확인사항 */}
+          {/* 채팅방 생성 */}
+          <div>
+            <select value={gameName} onChange={(e) => setGameName(e.target.value)}>
+              <option value="" disabled selected>--선택해주세요--</option>
+              <option value="overwatch">오버워치</option>
+              <option value="lol">롤</option>
+              <option value="maplestory">메이플스토리</option>
+              <option value="lostark">로스트아크</option>
+              <option value="dnf">던전앤파이터</option>
+            </select>
+
+            <input type="text" value={name} onChange={(e) => setName(e.target.value)}/>
+            <button onClick={createRoom}>방 만들기</button>
+          </div>
         </div>
 
         {/* 채팅방 생성 영역 */}
