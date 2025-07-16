@@ -24,7 +24,7 @@ public class DNFService {
 
     public DNFDto getDNF(String serverId, String nickname) {
 
-        //serverId = convertServerNameToId(serverId);
+        serverId = convertServerNameToId(serverId);
         HttpHeaders headers = new HttpHeaders();
         headers.set("x-api-key", dnfconfig.getApiKey());
         HttpEntity<String> entity = new HttpEntity<>(headers);
@@ -107,18 +107,18 @@ public class DNFService {
 
 
     //한글 서버 이름으로 변환
-//    private String convertServerNameToId(String koreanName) {
-//        return switch (koreanName.trim()) {
-//            case "카인" -> "cain";
-//            case "디레지에" -> "diregie";
-//            case "시로코" -> "siroco";
-//            case "프레이" -> "prey";
-//            case "카시야스" -> "casillas";
-//            case "힐더" -> "hilder";
-//            case "안톤" -> "anton";
-//            case "바칼" -> "bakal";
-//            default -> throw new IllegalArgumentException("알 수 없는 서버 이름: " + koreanName);
-//        };
-//    }
+    private String convertServerNameToId(String koreanName) {
+        return switch (koreanName.trim()) {
+            case "카인" -> "cain";
+            case "디레지에" -> "diregie";
+            case "시로코" -> "siroco";
+            case "프레이" -> "prey";
+            case "카시야스" -> "casillas";
+            case "힐더" -> "hilder";
+            case "안톤" -> "anton";
+            case "바칼" -> "bakal";
+            default -> throw new IllegalArgumentException("알 수 없는 서버 이름: " + koreanName);
+        };
+    }
 
 }

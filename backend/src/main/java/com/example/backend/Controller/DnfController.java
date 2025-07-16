@@ -38,4 +38,5 @@ public class DnfController {
             return ResponseEntity.internalServerError().body("던파 전적 조회 중 오류 발생: " + e.getMessage());
         }
     }
+
 }
