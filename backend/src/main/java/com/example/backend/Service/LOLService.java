@@ -24,6 +24,7 @@ public class LOLService {
     // 게임 닉네임+태그로 전체 전적 정보 가져오기
     public LOLDto getFullRiotStats(String name, String tag) {
         System.out.println("name: " + name);
+
         // 동일한 name+tag 조합이 있으면 API 호출 생략
         String cacheKey = name + "#" + tag;
         LOLDto cached = cacheService.get(cacheKey);
@@ -51,17 +52,13 @@ public class LOLService {
             // Summoner API 호출 → summonerId, 레벨 획득
             String summonerUrl = "https://kr.api.riotgames.com/lol/summoner/v4/summoners/by-puuid/" + puuid;
             ResponseEntity<String> summonerResponse = restTemplate.exchange(summonerUrl, HttpMethod.GET, entity, String.class);
-            String summonerId = JsonPath.read(summonerResponse.getBody(), "$.id");
             int level = JsonPath.read(summonerResponse.getBody(), "$.summonerLevel");
             dto.setLevel(level);
 
-            System.out.println("📦 summonerId: " + summonerId);
             System.out.println("📦 level: " + level);
 
             // League API 호출 → 티어/랭크/LP/승패/승률 획득
-
             String tierUrl = "https://kr.api.riotgames.com/lol/league/v4/entries/by-puuid/" + puuid;
-
             ResponseEntity<String> tierResponse = restTemplate.exchange(tierUrl, HttpMethod.GET, entity, String.class);
             List<Map<String, Object>> tierList = JsonPath.parse(tierResponse.getBody())
                     .read("$[?(@.queueType == 'RANKED_SOLO_5x5')]");
@@ -79,9 +76,15 @@ public class LOLService {
                 dto.setLosses(losses);
                 dto.setWinRate(String.format("%.1f", winRate));
 
-
                 System.out.println("티어: " + tier.get("tier") + " " + tier.get("rank") + " (" + tier.get("leaguePoints") + " LP)");
-
+            } else {
+                // 랭크 전적이 없는 경우 기본값 세팅
+                dto.setTier("UNRANKED");
+                dto.setRank("-");
+                dto.setLp(0);
+                dto.setWins(0);
+                dto.setLosses(0);
+                dto.setWinRate("-");
             }
 
             // Match ID 목록 가져오기

@@ -28,8 +28,8 @@ public class LOLController {
             String name = parts[0];
             String tag = parts[1];
 
-            System.out.println("🎯 name: " + name);
-            System.out.println("🎯 tag: " + tag);
+            System.out.println("name: " + name);
+            System.out.println("tag: " + tag);
 
             // 라이엇 API를 통해 전적 데이터 조회
             LOLDto riotStats = lolService.getFullRiotStats(name, tag);
